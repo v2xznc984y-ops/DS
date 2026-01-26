@@ -20,9 +20,10 @@ class Node:
         Initialize a node.
         
         Args:
-            node_id: Unique integer identifier for this node
+            node_id: Unique identifier for this node (string, can be UUID)
         """
-        self.node_id = node_id
+        # Normalize node_id to string (allows UUIDs or custom string IDs)
+        self.node_id = str(node_id)
         self.term = 0
         self.is_leader = False
         self.leader_id = None
@@ -51,7 +52,8 @@ class Node:
         self.ack_retry_count = {}  # (seq, msg_id) -> retry count
         
         # Create sockets
-        self.unicast_sock = make_unicast_socket("0.0.0.0", BASE_PORT + node_id)
+        # Use ephemeral unicast port (0) so UUID node IDs don't need numeric ports
+        self.unicast_sock = make_unicast_socket("0.0.0.0", 0)
         self.multicast_sock = make_multicast_listener_socket(MCAST_GRP, MCAST_PORT)
         
         # Start listener threads
@@ -162,7 +164,12 @@ class Node:
                 self.leader_id = payload.get("leader_id")
                 self.leader_addr = addr
                 self.term = payload.get("term", 0)
-                self.members = payload.get("members", {})
+                # Normalize members: convert list addresses to tuples
+                raw_members = payload.get("members", {})
+                self.members = {
+                    str(k): tuple(v) if isinstance(v, list) else v
+                    for k, v in raw_members.items()
+                }
                 
                 # Initialize last_seen to NOW for all members
                 now = time.time()
@@ -209,7 +216,9 @@ class Node:
                 # Only send heartbeat if not leader and leader exists
                 if not self.is_leader and self.leader_addr:
                     msg = make_msg(HEARTBEAT, self.node_id, self.term)
-                    send_json(self.unicast_sock, self.leader_addr, msg)
+                    # Ensure leader_addr is a tuple
+                    leader_addr = tuple(self.leader_addr) if isinstance(self.leader_addr, list) else self.leader_addr
+                    send_json(self.unicast_sock, leader_addr, msg)
                     # Uncomment for debugging:
                     # print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr}")
             except Exception as e:
@@ -230,15 +239,15 @@ class Node:
                 
                 # Check last_seen for all members except self
                 for member_id in list(self.members.keys()):
-                    # Convert member_id to int for comparison (it's a string from dict)
-                    member_id_int = int(member_id) if isinstance(member_id, str) else member_id
+                    # Normalize to string for comparison
+                    member_id_str = str(member_id)
                     
-                    if member_id_int == self.node_id:
+                    if member_id_str == self.node_id:
                         continue  # Skip self
                     
-                    last_seen_time = self.last_seen.get(member_id, now)
+                    last_seen_time = self.last_seen.get(member_id_str, now)
                     if now - last_seen_time > FAILURE_TIMEOUT_SEC:
-                        failed_nodes.append(member_id)
+                        failed_nodes.append(member_id_str)
                 
                 # Remove failed nodes and broadcast
                 for node_id in failed_nodes:
@@ -281,8 +290,9 @@ class Node:
                 pass
     
     def higher_ids(self):
-        """Return list of member IDs greater than this node's ID."""
-        return [int(mid) for mid in self.members.keys() if int(mid) > self.node_id]
+        """Return list of member IDs greater than this node's ID (lexicographic string ordering)."""
+        # For UUIDs and string IDs, use lexicographic comparison
+        return [mid for mid in self.members.keys() if mid > self.node_id]
     
     def start_election(self):
         """Start bully election: send ELECTION to higher IDs, wait for response."""
@@ -424,8 +434,8 @@ class Node:
         # Track which members need to ACK (all except leader itself)
         pending_set = set()
         for member_id in self.members.keys():
-            member_id_int = int(member_id) if isinstance(member_id, str) else member_id
-            if member_id_int != self.node_id:
+            # Compare as strings (UUIDs are stored as strings)
+            if member_id != self.node_id:
                 pending_set.add(member_id)
         
         self.pending_acks[(seq, msg_id)] = pending_set
@@ -509,8 +519,8 @@ class Node:
         # Remove dead nodes from members (nodes that haven't been seen in a while)
         dead_nodes = []
         for member_id in list(self.members.keys()):
-            member_id_int = int(member_id) if isinstance(member_id, str) else member_id
-            if member_id_int != self.node_id:
+            # Compare as strings (UUIDs are stored as strings)
+            if member_id != self.node_id:
                 # Check if this member was last seen more than FAILURE_TIMEOUT_SEC ago
                 # (This catches nodes that were already suspected dead)
                 last_seen_time = self.last_seen.get(member_id, now)
@@ -552,7 +562,9 @@ class Node:
             channel: "multicast" or "unicast"
         """
         msg_type = msg.get("type")
-        from_id = msg.get("from_id")
+        # Normalize incoming from_id to string
+        from_id_raw = msg.get("from_id")
+        from_id = str(from_id_raw) if from_id_raw is not None else None
         
         # Update last_seen on ANY message from a peer
         if from_id is not None:
@@ -613,7 +625,12 @@ class Node:
             # Only accept if term >= current term
             if msg_term >= self.term:
                 self.term = msg_term
-                self.members = payload.get("members", {})
+                # Normalize members: convert list addresses to tuples
+                raw_members = payload.get("members", {})
+                self.members = {
+                    str(k): tuple(v) if isinstance(v, list) else v
+                    for k, v in raw_members.items()
+                }
                 
                 # Initialize last_seen to NOW for all members (don't use stale timestamps)
                 now = time.time()
@@ -661,9 +678,10 @@ class Node:
                 self.leader_id = coordinator_id
                 self.is_leader = (coordinator_id == self.node_id)
                 
-                # Update leader address from members dict
+                # Update leader address from members dict, ensuring it's a tuple
                 if coordinator_id in self.members:
-                    self.leader_addr = self.members[coordinator_id]
+                    addr_val = self.members[coordinator_id]
+                    self.leader_addr = tuple(addr_val) if isinstance(addr_val, list) else addr_val
                 else:
                     self.leader_addr = addr
                 
