@@ -3,6 +3,7 @@ import time
 import sys
 import os
 import socket
+import random
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -42,6 +43,13 @@ class Node:
         # Track last membership update from leader (for followers)
         self.last_membership_update = time.time()
         
+        # Track leader transition time to avoid false failures during election
+        self.leader_transition_time = time.time()
+        
+        # Layer references (set by main.py during initialization)
+        self.application_layer = None
+        self.middleware_layer = None
+        
         # Reliable Total Order Multicast (ATOM) - all nodes
         self.next_seq_to_deliver = 1  # Next sequence number to deliver
         self.holdback = {}  # seq -> message (out-of-order messages waiting to be delivered)
@@ -50,6 +58,10 @@ class Node:
         self.next_seq_to_assign = 1  # Next sequence number to assign
         self.pending_acks = {}  # (seq, msg_id) -> set of peer_ids missing ACK
         self.ack_retry_count = {}  # (seq, msg_id) -> retry count
+        
+        # Message history buffer - leader stores last 20 delivered messages
+        self.message_history = []  # List of last 20 messages: [{"seq": int, "mid": str, "payload": dict, "timestamp": float}, ...]
+        self.MAX_HISTORY = 20
         
         # Create sockets
         # Use ephemeral unicast port (0) so UUID node IDs don't need numeric ports
@@ -154,8 +166,17 @@ class Node:
             send_json(mcast_send_sock, (MCAST_GRP, MCAST_PORT), msg)
             print(f"Node {self.node_id}: Sent DISCOVERY (attempt {attempt + 1}/{DISCOVERY_RETRIES})")
             
-            # Wait for reply from listener thread
-            time.sleep(DISCOVERY_TIMEOUT_SEC)
+            # Randomized wait time between 1.0 and 5.0 seconds (mitigates collision risk)
+            randomized_wait = random.uniform(1.0, 5.0)
+            print(f"Node {self.node_id}: Waiting {randomized_wait:.2f}s before retry (listening for heartbeat)...")
+            
+            # Wait for DISCOVERY_REPLY from listener thread (don't compete for multicast socket)
+            start_wait = time.time()
+            while time.time() - start_wait < randomized_wait:
+                if self.discovery_reply:
+                    print(f"Node {self.node_id}: Received DISCOVERY_REPLY during wait - joining cluster")
+                    break  # Exit wait loop to process reply
+                time.sleep(0.1)  # Check every 100ms instead of competing for socket
             
             if self.discovery_reply:
                 # Got a reply from listener thread
@@ -175,7 +196,35 @@ class Node:
                 now = time.time()
                 self.last_seen = {member_id: now for member_id in self.members.keys()}
                 
+                # Receive and process message history from leader
+                message_history = payload.get("message_history", [])
+                if message_history:
+                    print(f"Node {self.node_id}: Received {len(message_history)} historical messages from leader")
+                    # Add historical messages to holdback and deliver them in order
+                    for hist_msg in message_history:
+                        seq = hist_msg.get("seq")
+                        mid = hist_msg.get("mid")
+                        msg_payload = hist_msg.get("payload", {})
+                        self.holdback[seq] = {"msg_id": mid, "payload": msg_payload}
+                        # Update next_seq_to_deliver if this fills a gap
+                        while self.next_seq_to_deliver in self.holdback:
+                            msg_to_deliver = self.holdback.pop(self.next_seq_to_deliver)
+                            delivered_text = msg_to_deliver.get("payload", {}).get("text", "")
+                            print(f"Node {self.node_id}: DELIVERED historical message seq={self.next_seq_to_deliver}: '{delivered_text}'")
+                            self.next_seq_to_deliver += 1
+                
                 print(f"Node {self.node_id}: Received DISCOVERY_REPLY from leader {self.leader_id}")
+                
+                # Check if new node's UUID is greater than current leader's UUID
+                # If so, initiate election to replace the leader (Bully algorithm requirement)
+                if self.node_id > self.leader_id:
+                    print(f"Node {self.node_id}: New node UUID ({self.node_id}) > leader UUID ({self.leader_id})")
+                    print(f"Node {self.node_id}: Initiating election as per Bully algorithm")
+                    mcast_send_sock.close()
+                    # Start election after brief delay to ensure cluster is aware
+                    threading.Thread(target=lambda: (time.sleep(0.5), self.start_election()), daemon=True).start()
+                    return
+                
                 mcast_send_sock.close()
                 return
         
@@ -186,6 +235,7 @@ class Node:
         self.term += 1
         self.members[self.node_id] = self.leader_addr
         self.last_seen[self.node_id] = time.time()
+        self.leader_transition_time = time.time()
         mcast_send_sock.close()
         print(f"Node {self.node_id}: No leader found, self-electing as leader")
     
@@ -219,8 +269,11 @@ class Node:
                     # Ensure leader_addr is a tuple
                     leader_addr = tuple(self.leader_addr) if isinstance(self.leader_addr, list) else self.leader_addr
                     send_json(self.unicast_sock, leader_addr, msg)
-                    # Uncomment for debugging:
-                    # print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr}")
+                    print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr}")
+                elif self.is_leader:
+                    pass  # Leader doesn't send heartbeats
+                elif not self.leader_addr:
+                    print(f"Node {self.node_id}: Cannot send heartbeat - leader_addr not set yet")
             except Exception as e:
                 print(f"Node {self.node_id} heartbeat error: {e}")
     
@@ -232,6 +285,12 @@ class Node:
                 
                 # Only leader does failure detection
                 if not self.is_leader:
+                    continue
+                
+                # Skip failure detection for 2 seconds after becoming leader
+                # (grace period to allow followers to start sending heartbeats)
+                time_as_leader = time.time() - self.leader_transition_time
+                if time_as_leader < 2.0:
                     continue
                 
                 now = time.time()
@@ -246,7 +305,11 @@ class Node:
                         continue  # Skip self
                     
                     last_seen_time = self.last_seen.get(member_id_str, now)
-                    if now - last_seen_time > FAILURE_TIMEOUT_SEC:
+                    time_since_seen = now - last_seen_time
+                    print(f"Node {self.node_id}: Checking member {member_id_str}: last_seen={time_since_seen:.2f}s ago (threshold={FAILURE_TIMEOUT_SEC}s)")
+                    
+                    # Add 0.5s grace period to account for clock skew and network latency
+                    if time_since_seen > FAILURE_TIMEOUT_SEC + 0.5:
                         failed_nodes.append(member_id_str)
                 
                 # Remove failed nodes and broadcast
@@ -298,6 +361,14 @@ class Node:
         """Start bully election: send ELECTION to higher IDs, wait for response."""
         if self.election_in_progress:
             return  # Already running election
+        
+        # Don't start new election if current leader has a HIGHER UUID than us
+        # (Bully algorithm: only nodes with higher UUID should challenge the leader)
+        if self.leader_id and self.leader_id != "NULL" and self.leader_id > self.node_id:
+            time_since_leader = time.time() - self.last_membership_update
+            if time_since_leader < FAILURE_TIMEOUT_SEC:
+                print(f"Node {self.node_id}: Skipping election - leader {self.leader_id[:8]}... is superior")
+                return
         
         self.election_in_progress = True
         self.awaiting_coordinator = False
@@ -352,8 +423,18 @@ class Node:
                 
                 # If haven't received MEMBERSHIP update from leader in FAILURE_TIMEOUT_SEC, assume dead
                 now = time.time()
-                if now - self.last_membership_update > FAILURE_TIMEOUT_SEC:
+                time_since_membership_update = now - self.last_membership_update
+                
+                # Add grace period: don't check immediately after becoming follower
+                # Wait at least 3 seconds to allow first MEMBERSHIP to arrive
+                time_since_became_follower = now - self.leader_transition_time
+                if time_since_became_follower < 3.0:
+                    continue  # Wait longer before checking
+                
+                if time_since_membership_update > FAILURE_TIMEOUT_SEC:
                     print(f"Node {self.node_id}: Leader {self.leader_id} appears to be dead (no update for {FAILURE_TIMEOUT_SEC}s)")
+                    print(f"Node {self.node_id}: Initiating election due to leader failure")
+                    self.leader_id = None  # Clear leader before starting election
                     self.start_election()
                     break  # Stop checking once we start election
             
@@ -362,6 +443,8 @@ class Node:
     
     def _periodic_membership_broadcast(self):
         """Leader periodically broadcasts membership to keep followers alive."""
+        first_broadcast = True
+        
         while True:
             try:
                 # Only leader does this
@@ -369,9 +452,16 @@ class Node:
                     time.sleep(1.0)
                     continue
                 
-                # Broadcast membership every HEARTBEAT_INTERVAL_SEC
-                time.sleep(HEARTBEAT_INTERVAL_SEC)
-                self._broadcast_membership()
+                # On first iteration, broadcast immediately (no sleep)
+                # This ensures followers get quick update when leader is elected
+                if first_broadcast:
+                    self._broadcast_membership()
+                    first_broadcast = False
+                    time.sleep(HEARTBEAT_INTERVAL_SEC)
+                else:
+                    # Broadcast membership every HEARTBEAT_INTERVAL_SEC
+                    time.sleep(HEARTBEAT_INTERVAL_SEC)
+                    self._broadcast_membership()
             
             except Exception as e:
                 print(f"Node {self.node_id} membership broadcast error: {e}")
@@ -405,11 +495,46 @@ class Node:
                 # Ignore input errors, continue loop
                 pass
     
+    def propose_message(self, message):
+        """
+        Propose a message to be ordered by the distributed system.
+        
+        This is called by the middleware/application layer.
+        
+        Args:
+            message: Message dictionary to propose
+        """
+        mid = msg_id()
+        payload = message
+        
+        if self.is_leader:
+            # Leader directly orders the message
+            self._order_message(mid, payload)
+        else:
+            # Follower sends PROPOSE to leader
+            propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
+            try:
+                if self.leader_addr:
+                    send_json(self.unicast_sock, self.leader_addr, propose_msg)
+            except Exception as e:
+                pass  # Silently fail if leader not available
+    
     def _order_message(self, msg_id, payload):
         """Leader orders a message with a sequence number."""
         # Assign sequence number
         seq = self.next_seq_to_assign
         self.next_seq_to_assign += 1
+        
+        # Add to message history (leader only)
+        self.message_history.append({
+            "seq": seq,
+            "mid": msg_id,
+            "payload": payload,
+            "timestamp": time.time()
+        })
+        # Keep only last 20 messages
+        if len(self.message_history) > self.MAX_HISTORY:
+            self.message_history.pop(0)
         
         # Create ORDERED message
         ordered_payload = {
@@ -505,12 +630,17 @@ class Node:
         self.leader_addr = self.unicast_sock.getsockname()
         self.election_in_progress = False
         self.awaiting_coordinator = False
+        self.leader_transition_time = time.time()
         
         print(f"Node {self.node_id}: Elected as NEW LEADER (term={self.term})")
         
         # Initialize members dict if empty
         if not self.members:
             self.members[self.node_id] = self.leader_addr
+        
+        # **IMMEDIATE**: Broadcast MEMBERSHIP to all current members so they know leader changed
+        # Do this BEFORE cleaning up dead nodes, so old leader gets notified
+        self._broadcast_membership()
         
         # Reset last_seen for all members to NOW (they haven't sent heartbeats yet in new term)
         now = time.time()
@@ -536,6 +666,33 @@ class Node:
         
         # Broadcast COORDINATOR to all peers (skip dead ones)
         msg = make_msg(COORDINATOR, self.node_id, self.term, {"leader_id": self.node_id})
+        
+        # First, broadcast via MULTICAST so ALL nodes hear it (including old leaders not in members dict)
+        try:
+            mcast_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            send_json(mcast_sock, (MCAST_GRP, MCAST_PORT), msg)
+            mcast_sock.close()
+            print(f"Node {self.node_id}: Broadcasted COORDINATOR via multicast to all nodes")
+        except Exception as e:
+            print(f"Node {self.node_id}: Failed to broadcast COORDINATOR via multicast: {e}")
+        
+        # **ALSO BROADCAST MEMBERSHIP VIA MULTICAST** so all nodes get updated member list
+        # This ensures old leaders and new nodes get the cluster state
+        try:
+            membership_payload = {
+                "term": self.term,
+                "members": self.members,
+                "last_seen": self.last_seen
+            }
+            membership_msg = make_msg(MEMBERSHIP, self.node_id, self.term, membership_payload)
+            mcast_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            send_json(mcast_sock, (MCAST_GRP, MCAST_PORT), membership_msg)
+            mcast_sock.close()
+            print(f"Node {self.node_id}: Broadcasted MEMBERSHIP via multicast to all nodes")
+        except Exception as e:
+            print(f"Node {self.node_id}: Failed to broadcast MEMBERSHIP via multicast: {e}")
+        
+        # Also send via UNICAST to members for redundancy
         for member_id, addr in list(self.members.items()):
             if member_id == self.node_id:
                 continue
@@ -584,12 +741,13 @@ class Node:
                         # Broadcast updated membership
                         self._broadcast_membership()
                 
-                # Reply with cluster info
+                # Reply with cluster info and message history
                 payload = {
                     "term": self.term,
                     "leader_id": self.leader_id,
                     "members": self.members,
-                    "last_seen": self.last_seen
+                    "last_seen": self.last_seen,
+                    "message_history": self.message_history  # Include last 20 messages
                 }
                 reply = make_msg(DISCOVERY_REPLY, self.node_id, self.term, payload)
                 
@@ -627,14 +785,33 @@ class Node:
                 self.term = msg_term
                 # Normalize members: convert list addresses to tuples
                 raw_members = payload.get("members", {})
-                self.members = {
+                new_members = {
                     str(k): tuple(v) if isinstance(v, list) else v
                     for k, v in raw_members.items()
                 }
                 
-                # Initialize last_seen to NOW for all members (don't use stale timestamps)
+                # Ensure we add ourselves to the cluster if not present in leader's members dict
+                # This handles case where a former leader needs to rejoin after losing leadership
+                if self.node_id not in new_members:
+                    new_members[self.node_id] = self.leader_addr
+                    print(f"Node {self.node_id}: Re-added self to members (was missing from leader's list)")
+                
+                # Update members dict
+                self.members = new_members
+                
+                # Preserve last_seen timestamps for existing members, only add new ones with NOW
                 now = time.time()
-                self.last_seen = {member_id: now for member_id in self.members.keys()}
+                for member_id in self.members.keys():
+                    if member_id not in self.last_seen:
+                        # New member we haven't heard from yet
+                        self.last_seen[member_id] = now
+                    # else: keep existing last_seen timestamp (don't reset it!)
+                
+                # Remove members that are no longer in the cluster
+                members_to_remove = [m for m in self.last_seen.keys() if m not in self.members]
+                for m in members_to_remove:
+                    del self.last_seen[m]
+                
                 self.last_membership_update = now
                 
                 print(f"Node {self.node_id}: Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
@@ -674,6 +851,7 @@ class Node:
             
             # Update if newer term or valid coordinator
             if coordinator_term >= self.term:
+                was_leader = self.is_leader
                 self.term = coordinator_term
                 self.leader_id = coordinator_id
                 self.is_leader = (coordinator_id == self.node_id)
@@ -690,6 +868,15 @@ class Node:
                 
                 # Reset last membership update timer (leader just announced itself)
                 self.last_membership_update = time.time()
+                
+                # Record when leadership transitioned
+                self.leader_transition_time = time.time()
+                
+                # If transitioning FROM leader TO follower, reset last_seen times
+                # to avoid false failure detections during leader transition
+                if was_leader and not self.is_leader:
+                    self.last_seen = {member_id: time.time() for member_id in self.members.keys()}
+                    print(f"Node {self.node_id}: Stepping down as leader, resetting failure detector timers")
                 
                 print(f"Node {self.node_id}: Received COORDINATOR - new leader is {coordinator_id} (term={coordinator_term})")
         
