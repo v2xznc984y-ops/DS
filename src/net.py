@@ -77,7 +77,7 @@ def make_multicast_listener_socket(group, port):
     return sock
 
 
-def make_multicast_sender_socket():
+def make_multicast_sender_socket(interface="0.0.0.0"):
     """
     Create and configure UDP socket for sending multicast messages.
     Sets appropriate multicast socket options for sending.
