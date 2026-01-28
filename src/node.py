@@ -8,7 +8,7 @@ import socket
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import BASE_PORT, MCAST_GRP, MCAST_PORT, DISCOVERY_RETRIES, DISCOVERY_TIMEOUT_SEC, HEARTBEAT_INTERVAL_SEC, FAILURE_TIMEOUT_SEC, ELECTION_TIMEOUT_SEC, ACK_TIMEOUT_SEC, ACK_RETRIES
-from src.protocol import make_msg, msg_id, DISCOVERY, DISCOVERY_REPLY, HEARTBEAT, MEMBERSHIP, ELECTION, ELECTION_OK, COORDINATOR, PROPOSE, ORDERED, DELIVER_ACK
+from src.protocol import make_msg, msg_id, DISCOVERY, DISCOVERY_REPLY, HEARTBEAT, MEMBERSHIP, ELECTION, ELECTION_OK, COORDINATOR, PROPOSE, PROPOSE_ACK, ORDERED, DELIVER_ACK
 from src.net import make_unicast_socket, make_multicast_listener_socket, make_multicast_sender_socket, recv_json, send_json
 from src.ui import ChatUI
 from src.vector_clock import VectorClock
@@ -74,6 +74,11 @@ class Node:
         self.next_seq_to_assign = 1  # Next sequence number to assign
         self.pending_acks = {}  # (seq, msg_id) -> set of peer_ids missing ACK
         self.ack_retry_count = {}  # (seq, msg_id) -> retry count
+        
+        # Pending messages from followers waiting for ACK from leader
+        self.pending_messages = {}  # msg_id -> {"text": str, "retries": int, "timestamp": float}
+        self.propose_ack_timeout = 1.0  # Wait 1 second for ACK before retry
+        self.propose_max_retries = 5
         
         # Create sockets
         # Use port 0 to let OS assign a free unicast port (prevents conflicts on same machine)
@@ -147,6 +152,14 @@ class Node:
             name=f"Node-{self.node_id}-Retransmit"
         )
         retransmit_thread.start()
+        
+        # Pending message retry thread (followers resend PROPOSE if no ACK)
+        pending_retry_thread = threading.Thread(
+            target=self._pending_message_retry_loop,
+            daemon=True,
+            name=f"Node-{self.node_id}-PendingRetry"
+        )
+        pending_retry_thread.start()
     
     def _system_log(self, msg):
         """
@@ -490,20 +503,29 @@ class Node:
                 else:
                     # Follower sends PROPOSE to leader
                     if not self.leader_addr:
+                        print(f"Node {self.node_id}: Error: Don't know leader address yet, cannot send message. Wait for discovery.")
                         self._system_log(f"Error: Don't know leader address yet, cannot send message. Wait for discovery.")
-                        print(f"Node {self.node_id}: DEBUG - leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
                         continue
+                    
+                    # Add message to pending list BEFORE sending (durability)
+                    self.pending_messages[mid] = {
+                        "text": text,
+                        "retries": 0,
+                        "timestamp": time.time()
+                    }
                     
                     propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
                     try:
                         self._system_log(f"Sending PROPOSE to leader {self.leader_id} at {self.leader_addr}")
-                        print(f"Node {self.node_id}: DEBUG - Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
                         send_json(self.unicast_sock, self.leader_addr, propose_msg)
-                        self._system_log(f"Proposed message '{text}'")
-                        print(f"Node {self.node_id}: Message sent successfully")
+                        self._system_log(f"Proposed message '{text}' (waiting for ACK)")
+                        print(f"Node {self.node_id}: Message sent to leader (waiting for confirmation...)")
                     except Exception as e:
                         self._system_log(f"Failed to send PROPOSE to leader: {e}")
-                        print(f"Node {self.node_id}: DEBUG - Failed to send PROPOSE: {e}")
+                        print(f"Node {self.node_id}: ERROR - Failed to send message: {e}")
+                        # Remove from pending on send failure
+                        if mid in self.pending_messages:
+                            del self.pending_messages[mid]
             
             except Exception as e:
                 # Ignore input errors, continue loop
@@ -575,6 +597,8 @@ class Node:
         
         self.pending_acks[(seq, msg_id)] = pending_set
         self._system_log(f"Ordered message seq={seq}, mid={msg_id}, from node {sender_id}, waiting for ACKs from {len(pending_set)} peers")
+        
+        return seq
     
     def _retransmit_loop(self):
         """Periodically retransmit ORDERED messages to peers missing ACKs."""
@@ -632,6 +656,50 @@ class Node:
                             send_json(self.unicast_sock, addr, ordered_msg)
                         except Exception as e:
                             pass
+    
+    def _pending_message_retry_loop(self):
+        """Retry pending messages that didn't get ACKed from leader."""
+        while True:
+            time.sleep(0.5)  # Check every 500ms
+            
+            # Only followers have pending messages
+            if self.is_leader:
+                continue
+            
+            current_time = time.time()
+            
+            # Check each pending message for timeout
+            for msg_id, msg_info in list(self.pending_messages.items()):
+                timeout_at = msg_info.get("timestamp", 0) + self.propose_ack_timeout
+                retries = msg_info.get("retries", 0)
+                
+                if current_time >= timeout_at:
+                    # Timeout occurred - resend to leader
+                    if retries >= self.propose_max_retries:
+                        # Max retries exceeded - give up
+                        self._system_log(f"Max retries ({self.propose_max_retries}) exceeded for message {msg_id}")
+                        del self.pending_messages[msg_id]
+                        continue
+                    
+                    # Resend PROPOSE to current leader
+                    if self.leader_addr is None:
+                        self._system_log(f"No leader available for retrying message {msg_id}")
+                        continue
+                    
+                    try:
+                        text = msg_info.get("text", "")
+                        payload = {"mid": msg_id, "text": text}
+                        propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
+                        send_json(self.unicast_sock, self.leader_addr, propose_msg)
+                        
+                        # Update retry info
+                        msg_info["retries"] = retries + 1
+                        msg_info["timestamp"] = current_time
+                        
+                        self._system_log(f"Retrying PROPOSE for message {msg_id} (retry #{retries + 1}/{self.propose_max_retries})")
+                    except Exception as e:
+                        self._system_log(f"Failed to retry PROPOSE for message {msg_id}: {e}")
+
     
     def _become_leader(self):
         """Declare self as leader and broadcast COORDINATOR."""
@@ -918,6 +986,22 @@ class Node:
                 # Reset leader election timestamp if we become leader
                 if self.is_leader:
                     self.leader_election_ts = time.time()
+                
+                # Followers: resend any pending messages to new leader
+                if not self.is_leader and self.pending_messages:
+                    self._system_log(f"Resending {len(self.pending_messages)} pending messages to new leader")
+                    for msg_id, msg_info in list(self.pending_messages.items()):
+                        try:
+                            text = msg_info.get("text", "")
+                            payload = {"mid": msg_id, "text": text}
+                            propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
+                            send_json(self.unicast_sock, self.leader_addr, propose_msg)
+                            # Reset retry count for new leader
+                            msg_info["retries"] = 0
+                            msg_info["timestamp"] = time.time()
+                            self._system_log(f"Resent pending message {msg_id} to new leader")
+                        except Exception as e:
+                            self._system_log(f"Failed to resend pending message {msg_id} to new leader: {e}")
                 # Followers do NOT reset sequence numbers - they continue expecting the next seq
                 # (sequence numbers are globally monotonic across leader transitions)
                 
@@ -936,11 +1020,35 @@ class Node:
                 text = payload.get("text", "")
                 # Pass the original sender's ID (from_id) to preserve it in ordered messages
                 self._system_log(f"Leader received PROPOSE from node {from_id}: '{text}'")
-                self._order_message(msg_id, payload, sender_id=from_id)
+                seq = self._order_message(msg_id, payload, sender_id=from_id)
+                
+                # Send PROPOSE_ACK back to the follower with the assigned sequence number
+                try:
+                    sender_port = BASE_PORT + from_id
+                    sender_addr = (sender_ip, sender_port)
+                    ack_payload = {"mid": msg_id, "seq": seq}
+                    ack_msg = make_msg(PROPOSE_ACK, self.node_id, self.term, ack_payload)
+                    send_json(self.unicast_sock, sender_addr, ack_msg)
+                    self._system_log(f"Sent PROPOSE_ACK to node {from_id} for message {msg_id} with seq={seq}")
+                except Exception as e:
+                    self._system_log(f"Failed to send PROPOSE_ACK to node {from_id}: {e}")
             else:
                 # Non-leader ignores PROPOSE
                 self._system_log(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 pass
+        
+        elif msg_type == PROPOSE_ACK:
+            # Received acknowledgment from leader that PROPOSE was accepted
+            payload = msg.get("payload", {})
+            msg_id = payload.get("mid")
+            seq = payload.get("seq")
+            
+            # Remove from pending messages - message was successfully ordered
+            if msg_id in self.pending_messages:
+                del self.pending_messages[msg_id]
+                self._system_log(f"Received PROPOSE_ACK for message {msg_id} with seq={seq}")
+            else:
+                self._system_log(f"Received PROPOSE_ACK for unknown message {msg_id}")
         
         elif msg_type == ORDERED:
             # Received ordered message from leader

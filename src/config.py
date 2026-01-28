@@ -2,6 +2,8 @@
 MCAST_GRP = "224.0.0.10"
 MCAST_PORT = 55000
 
+BIND_IP = "0.0.0.0"
+
 # Port Configuration
 BASE_PORT = 51000
 
