@@ -729,9 +729,15 @@ class Node:
         now = time.time()
         self.last_seen = {member_id: now for member_id in self.members.keys()}
         
-        # When becoming leader, we DON'T reset next_seq_to_assign
-        # Instead, keep the current sequence number to maintain global monotonicity
-        # (sequence numbers must never go backwards or repeat across leader transitions)
+        # CRITICAL: When becoming leader via election, sync next_seq_to_assign with previous leader's progress
+        # The new leader must start from the highest sequence that has already been delivered
+        # Initialize max_seq_seen_from_followers to current next_seq_to_deliver - 1
+        # (what we've delivered so far tells us the highest seq that was ordered)
+        self.max_seq_seen_from_followers = max(0, self.next_seq_to_deliver - 1)
+        if self.next_seq_to_assign <= self.max_seq_seen_from_followers:
+            old_next_seq = self.next_seq_to_assign
+            self.next_seq_to_assign = self.max_seq_seen_from_followers + 1
+            self._system_log(f"New leader: Synced sequence from delivered state. Old next_seq={old_next_seq}, new next_seq={self.next_seq_to_assign}")
         
         # Clear message state from old leader(s), but keep sequence counter
         self.pending_acks = {}  # Clear pending ACKs from old leader's messages
