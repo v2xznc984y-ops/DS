@@ -36,7 +36,10 @@ class Node:
         # Election state
         self.election_in_progress = False
         self.awaiting_coordinator = False
+        # Track whether we received an OK from any higher node during an election
+        self.got_ok = False
         self.last_election_start_ts = None
+        self.leader_election_ts = None  # When current leader was elected (for grace period)
         
         # Track last membership update from leader (for followers)
         self.last_membership_update = time.time()
@@ -162,13 +165,36 @@ class Node:
                 self.leader_id = payload.get("leader_id")
                 self.leader_addr = addr
                 self.term = payload.get("term", 0)
-                self.members = payload.get("members", {})
+                
+                # Normalize all addresses in members dict from list to tuple (JSON converts tuples to lists)
+                raw_members = payload.get("members", {})
+                self.members = {}
+                for member_id, member_addr in raw_members.items():
+                    if isinstance(member_addr, list):
+                        self.members[member_id] = tuple(member_addr)
+                    else:
+                        self.members[member_id] = member_addr
                 
                 # Initialize last_seen to NOW for all members
                 now = time.time()
                 self.last_seen = {member_id: now for member_id in self.members.keys()}
                 
                 print(f"Node {self.node_id}: Received DISCOVERY_REPLY from leader {self.leader_id}")
+                # Enforce bully rule: never accept a leader with lower numeric ID
+                try:
+                    leader_id_int = int(self.leader_id) if self.leader_id is not None else None
+                except Exception:
+                    leader_id_int = self.leader_id
+
+                if isinstance(leader_id_int, int) and leader_id_int < self.node_id:
+                    # Ignore this discovery reply and start an election to assert higher-id leadership
+                    print(f"Node {self.node_id}: Ignoring discovered leader {self.leader_id} because it's lower-id; starting election")
+                    # Clear discovery reply so we don't reprocess it
+                    self.discovery_reply = None
+                    mcast_send_sock.close()
+                    # Start election to try to become/activate a higher-id leader
+                    self.start_election()
+                    return
                 mcast_send_sock.close()
                 return
         
@@ -177,8 +203,9 @@ class Node:
         self.leader_id = self.node_id
         self.leader_addr = self.unicast_sock.getsockname()
         self.term += 1
-        self.members[self.node_id] = self.leader_addr
-        self.last_seen[self.node_id] = time.time()
+        # Use string keys for members to keep JSON and runtime consistent
+        self.members[str(self.node_id)] = self.leader_addr
+        self.last_seen[str(self.node_id)] = time.time()
         mcast_send_sock.close()
         print(f"Node {self.node_id}: No leader found, self-electing as leader")
     
@@ -225,7 +252,16 @@ class Node:
                 if not self.is_leader:
                     continue
                 
+                # Suppress failure detection during elections to prevent overlap
+                if self.election_in_progress:
+                    continue
+                
+                # Grace period: don't remove nodes for FAILURE_TIMEOUT_SEC after becoming leader
+                # This gives followers time to send their first heartbeat
                 now = time.time()
+                if self.leader_election_ts and (now - self.leader_election_ts) < FAILURE_TIMEOUT_SEC:
+                    continue  # Skip failure detection during grace period
+                
                 failed_nodes = []
                 
                 # Check last_seen for all members except self
@@ -268,8 +304,13 @@ class Node:
         
         # Send to all peers (skip those that fail)
         for member_id, addr in list(self.members.items()):
-            if member_id == self.node_id:  # Don't send to self
-                continue
+            try:
+                if int(member_id) == self.node_id:  # Don't send to self
+                    continue
+            except Exception:
+                # If member_id is not numeric for some reason, fall back to string compare
+                if member_id == str(self.node_id):
+                    continue
             
             try:
                 # Convert addr to tuple if it's a list (from JSON)
@@ -291,7 +332,9 @@ class Node:
         
         self.election_in_progress = True
         self.awaiting_coordinator = False
-        self.term += 1  # New epoch
+        self.got_ok = False  # Reset OK flag for this election
+        # NOTE: Do NOT increment term here. In Bully algorithm, leadership is determined
+        # solely by node_id, not by term/epoch. Only COORDINATOR messages carry new terms.
         self.last_election_start_ts = time.time()
         
         print(f"Node {self.node_id}: Starting election (term={self.term})")
@@ -306,8 +349,9 @@ class Node:
             # Send ELECTION to all higher IDs
             msg = make_msg(ELECTION, self.node_id, self.term)
             for peer_id in higher:
-                if peer_id in self.members:
-                    peer_addr = self.members[peer_id]
+                peer_key = str(peer_id)
+                if peer_key in self.members:
+                    peer_addr = self.members[peer_key]
                     try:
                         send_json(self.unicast_sock, peer_addr, msg)
                         print(f"Node {self.node_id}: Sent ELECTION to higher peer {peer_id}")
@@ -321,8 +365,9 @@ class Node:
             def election_timeout():
                 time.sleep(ELECTION_TIMEOUT_SEC)
                 
-                # Check if we got OK response
-                if self.awaiting_coordinator:
+                # Only become leader if we did NOT receive any OK response
+                # (got_ok is set to True when ELECTION_OK arrives)
+                if not self.got_ok:
                     # No OK received - become leader
                     print(f"Node {self.node_id}: No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
                     self._become_leader()
@@ -331,19 +376,28 @@ class Node:
             timeout_thread.start()
     
     def _check_leader_alive(self):
-        """Followers check if leader is still alive (via MEMBERSHIP updates)."""
+        """
+        Followers check if leader is still alive by tracking last_seen[leader_id].
+        
+        Uses last_seen timestamp (updated on ANY message from leader: HEARTBEAT, MEMBERSHIP, etc.)
+        NOT MEMBERSHIP updates alone, to avoid false timeouts during elections or delays.
+        """
         while True:
             try:
                 time.sleep(1.0)
                 
-                # Only followers check leader
-                if self.is_leader or not self.leader_id:
+                # Only followers check leader (and suppress during own elections)
+                if self.is_leader or not self.leader_id or self.election_in_progress:
                     continue
                 
-                # If haven't received MEMBERSHIP update from leader in FAILURE_TIMEOUT_SEC, assume dead
+                # Check if we have seen the leader recently using last_seen tracking
+                # last_seen is updated on ANY message from a peer (heartbeat, membership, etc.)
                 now = time.time()
-                if now - self.last_membership_update > FAILURE_TIMEOUT_SEC:
-                    print(f"Node {self.node_id}: Leader {self.leader_id} appears to be dead (no update for {FAILURE_TIMEOUT_SEC}s)")
+                leader_key = str(self.leader_id)
+                last_seen_time = self.last_seen.get(leader_key, now)
+                
+                if now - last_seen_time > FAILURE_TIMEOUT_SEC:
+                    print(f"Node {self.node_id}: Leader {self.leader_id} appears to be dead (no message for {FAILURE_TIMEOUT_SEC}s)")
                     self.start_election()
                     break  # Stop checking once we start election
             
@@ -495,40 +549,29 @@ class Node:
         self.leader_addr = self.unicast_sock.getsockname()
         self.election_in_progress = False
         self.awaiting_coordinator = False
+        self.leader_election_ts = time.time()  # Mark when we became leader
         
         print(f"Node {self.node_id}: Elected as NEW LEADER (term={self.term})")
         
         # Initialize members dict if empty
         if not self.members:
-            self.members[self.node_id] = self.leader_addr
+            # store as string key for consistency with JSON-encoded membership
+            self.members[str(self.node_id)] = self.leader_addr
         
         # Reset last_seen for all members to NOW (they haven't sent heartbeats yet in new term)
+        # This gives followers time to respond to COORDINATOR before we mark them as dead
         now = time.time()
         self.last_seen = {member_id: now for member_id in self.members.keys()}
         
-        # Remove dead nodes from members (nodes that haven't been seen in a while)
-        dead_nodes = []
-        for member_id in list(self.members.keys()):
-            member_id_int = int(member_id) if isinstance(member_id, str) else member_id
-            if member_id_int != self.node_id:
-                # Check if this member was last seen more than FAILURE_TIMEOUT_SEC ago
-                # (This catches nodes that were already suspected dead)
-                last_seen_time = self.last_seen.get(member_id, now)
-                if now - last_seen_time > FAILURE_TIMEOUT_SEC:
-                    dead_nodes.append(member_id)
-        
-        # Remove dead nodes
-        for node_id in dead_nodes:
-            print(f"Node {self.node_id}: Removing dead node {node_id} from members")
-            del self.members[node_id]
-            if node_id in self.last_seen:
-                del self.last_seen[node_id]
-        
-        # Broadcast COORDINATOR to all peers (skip dead ones)
+        # Broadcast COORDINATOR to all peers first (before removing any nodes)
         msg = make_msg(COORDINATOR, self.node_id, self.term, {"leader_id": self.node_id})
         for member_id, addr in list(self.members.items()):
-            if member_id == self.node_id:
-                continue
+            try:
+                if int(member_id) == self.node_id:
+                    continue
+            except Exception:
+                if member_id == str(self.node_id):
+                    continue
             
             try:
                 # Convert addr to tuple if it's a list (from JSON)
@@ -554,20 +597,24 @@ class Node:
         msg_type = msg.get("type")
         from_id = msg.get("from_id")
         
-        # Update last_seen on ANY message from a peer
+        # Update last_seen on ANY message from a peer (use string keys)
         if from_id is not None:
-            self.last_seen[from_id] = time.time()
+            try:
+                self.last_seen[str(from_id)] = time.time()
+            except Exception:
+                self.last_seen[from_id] = time.time()
         
         if msg_type == DISCOVERY:
             # A node is trying to discover the cluster
             if self.is_leader:
-                # Add new member to cluster
-                if from_id not in self.members:
+                # Add new member to cluster; normalize member key to string
+                member_key = str(from_id)
+                if member_key not in self.members:
                     unicast_port = msg.get("payload", {}).get("unicast_port")
                     if unicast_port:
                         member_addr = (addr[0], unicast_port)
-                        self.members[from_id] = member_addr
-                        self.last_seen[from_id] = time.time()
+                        self.members[member_key] = member_addr
+                        self.last_seen[member_key] = time.time()
                         print(f"Node {self.node_id}: Added new member {from_id} to cluster")
                         # Broadcast updated membership
                         self._broadcast_membership()
@@ -613,7 +660,14 @@ class Node:
             # Only accept if term >= current term
             if msg_term >= self.term:
                 self.term = msg_term
-                self.members = payload.get("members", {})
+                # Normalize all addresses in members dict from list to tuple (JSON converts tuples to lists)
+                raw_members = payload.get("members", {})
+                self.members = {}
+                for member_id, addr in raw_members.items():
+                    if isinstance(addr, list):
+                        self.members[member_id] = tuple(addr)
+                    else:
+                        self.members[member_id] = addr
                 
                 # Initialize last_seen to NOW for all members (don't use stale timestamps)
                 now = time.time()
@@ -640,7 +694,8 @@ class Node:
         
         elif msg_type == ELECTION_OK:
             # Received OK from higher ID peer
-            # Set awaiting_coordinator and do not become leader
+            # Mark that we received an OK so election timeout won't make us leader
+            self.got_ok = True
             self.awaiting_coordinator = True
             print(f"Node {self.node_id}: Received OK from node {from_id}, awaiting coordinator")
             
@@ -654,21 +709,45 @@ class Node:
             payload = msg.get("payload", {})
             coordinator_id = payload.get("leader_id", from_id)
             coordinator_term = msg.get("term", 0)
-            
+
+            # Normalize coordinator_id to integer for comparison
+            try:
+                coord_id_int = int(coordinator_id) if isinstance(coordinator_id, str) else coordinator_id
+            except Exception:
+                coord_id_int = coordinator_id
+
+            # === Bully Invariant Enforcement ===
+            # In the Bully algorithm, leadership is determined solely by node ID.
+            # Higher-ID nodes must NEVER accept a leader with a lower ID.
+            # If a lower-ID node claims leadership, reject it and initiate an election
+            # to ensure the highest available node becomes leader.
+            if isinstance(coord_id_int, int) and coord_id_int < self.node_id:
+                # Reject coordinator from lower-ID node; start election to assert higher-id leadership
+                print(f"Node {self.node_id}: Ignoring COORDINATOR from lower-id {coordinator_id}; starting election")
+                if not self.election_in_progress:
+                    self.start_election()
+                return
+
             # Update if newer term or valid coordinator
             if coordinator_term >= self.term:
                 self.term = coordinator_term
                 self.leader_id = coordinator_id
-                self.is_leader = (coordinator_id == self.node_id)
-                
-                # Update leader address from members dict
-                if coordinator_id in self.members:
-                    self.leader_addr = self.members[coordinator_id]
+                # Normalize leader flag
+                self.is_leader = (coord_id_int == self.node_id)
+
+                # Update leader address from members dict (members use string keys)
+                if str(coordinator_id) in self.members:
+                    self.leader_addr = self.members[str(coordinator_id)]
                 else:
                     self.leader_addr = addr
                 
                 self.election_in_progress = False
                 self.awaiting_coordinator = False
+                self.got_ok = False  # Reset OK flag when new coordinator is established
+                
+                # Reset leader election timestamp if we become leader
+                if self.is_leader:
+                    self.leader_election_ts = time.time()
                 
                 # Reset last membership update timer (leader just announced itself)
                 self.last_membership_update = time.time()
