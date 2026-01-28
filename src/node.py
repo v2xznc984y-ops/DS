@@ -707,6 +707,7 @@ class Node:
             except Exception as e:
                 print(f"Node {self.node_id} reliable propose error: {e}")
     
+    def _become_leader(self):
         """Declare self as leader and broadcast COORDINATOR."""
         self.is_leader = True
         self.leader_id = self.node_id
