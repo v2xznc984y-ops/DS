@@ -263,10 +263,14 @@ class Node:
                 
                 # Only send heartbeat if not leader and leader exists
                 if not self.is_leader and self.leader_addr:
-                    msg = make_msg(HEARTBEAT, self.node_id, self.term)
+                    # Include the max sequence number this follower has delivered
+                    # This helps new leader know where to continue sequence numbering
+                    max_seq_delivered = self.next_seq_to_deliver - 1  # -1 because next_seq_to_deliver is the NEXT one expected
+                    payload = {"max_seq_delivered": max_seq_delivered}
+                    msg = make_msg(HEARTBEAT, self.node_id, self.term, payload)
                     send_json(self.unicast_sock, self.leader_addr, msg)
                     # Uncomment for debugging:
-                    # print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr}")
+                    # print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr} (max_seq={max_seq_delivered})")
             except Exception as e:
                 print(f"Node {self.node_id} heartbeat error: {e}")
     
@@ -484,15 +488,19 @@ class Node:
                     # Follower sends PROPOSE to leader
                     if not self.leader_addr:
                         self._system_log(f"Error: Don't know leader address yet, cannot send message. Wait for discovery.")
+                        print(f"Node {self.node_id}: DEBUG - leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
                         continue
                     
                     propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
                     try:
                         self._system_log(f"Sending PROPOSE to leader {self.leader_id} at {self.leader_addr}")
+                        print(f"Node {self.node_id}: DEBUG - Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
                         send_json(self.unicast_sock, self.leader_addr, propose_msg)
                         self._system_log(f"Proposed message '{text}'")
+                        print(f"Node {self.node_id}: Message sent successfully")
                     except Exception as e:
                         self._system_log(f"Failed to send PROPOSE to leader: {e}")
+                        print(f"Node {self.node_id}: DEBUG - Failed to send PROPOSE: {e}")
             
             except Exception as e:
                 # Ignore input errors, continue loop
@@ -644,11 +652,23 @@ class Node:
         now = time.time()
         self.last_seen = {member_id: now for member_id in self.members.keys()}
         
+        # When becoming leader, we DON'T reset next_seq_to_assign
+        # Instead, keep the current sequence number to maintain global monotonicity
+        # (sequence numbers must never go backwards or repeat across leader transitions)
+        
+        # Clear message state from old leader(s), but keep sequence counter
+        self.pending_acks = {}  # Clear pending ACKs from old leader's messages
+        self.ack_retry_count = {}  # Clear retry counts
+        self.message_history = []  # Clear message history
+        
         # Reinitialize vector clock with current members
         self.vc = VectorClock(self.node_id, [int(mid) for mid in self.members.keys()])
         
         # Broadcast COORDINATOR to all peers first (before removing any nodes)
         msg = make_msg(COORDINATOR, self.node_id, self.term, {"leader_id": self.node_id})
+        print(f"Node {self.node_id}: Broadcasting COORDINATOR to members: {self.members}")
+        self._system_log(f"Broadcasting COORDINATOR to {len(self.members)} members")
+        
         for member_id, addr in list(self.members.items()):
             try:
                 if int(member_id) == self.node_id:
@@ -661,10 +681,12 @@ class Node:
                 # Convert addr to tuple if it's a list (from JSON)
                 if isinstance(addr, list):
                     addr = tuple(addr)
+                print(f"Node {self.node_id}: Sending COORDINATOR to node {member_id} at {addr}")
                 send_json(self.unicast_sock, addr, msg)
                 self._system_log(f"Sent COORDINATOR to node {member_id} at {addr}")
             except Exception as e:
                 # Silently skip dead nodes
+                print(f"Node {self.node_id}: Failed to send COORDINATOR to node {member_id}: {e}")
                 self._system_log(f"Failed to send COORDINATOR to node {member_id}: {e}")
         
         # Broadcast updated membership
@@ -728,10 +750,25 @@ class Node:
         elif msg_type == HEARTBEAT:
             # Received heartbeat from a peer
             # last_seen already updated above
-            # Leader can optionally respond, but just tracking is enough
+            payload = msg.get("payload", {})
+            
             if self.is_leader:
-                # Could send HEARTBEAT_ACK, but ignoring for simplicity
-                pass
+                # Leader receiving heartbeat from follower
+                # Extract follower's last delivered sequence number for sequence sync
+                follower_max_seq = payload.get("max_seq_delivered", 0)
+                
+                # Track the highest sequence number any follower has delivered
+                # New leader uses this to know where to start assigning sequences
+                if not hasattr(self, 'max_seq_seen_from_followers'):
+                    self.max_seq_seen_from_followers = 0
+                
+                self.max_seq_seen_from_followers = max(self.max_seq_seen_from_followers, follower_max_seq)
+                
+                # If our next_seq_to_assign is behind what followers have seen, advance it
+                if self.next_seq_to_assign <= self.max_seq_seen_from_followers:
+                    self._system_log(f"Follower {from_id} reported seq={follower_max_seq}, advancing next_seq_to_assign from {self.next_seq_to_assign} to {self.max_seq_seen_from_followers + 1}")
+                    self.next_seq_to_assign = self.max_seq_seen_from_followers + 1
+
         
         elif msg_type == MEMBERSHIP:
             # Received membership update from leader
@@ -797,6 +834,8 @@ class Node:
             payload = msg.get("payload", {})
             coordinator_id = payload.get("leader_id", from_id)
             coordinator_term = msg.get("term", 0)
+            
+            print(f"Node {self.node_id}: Received COORDINATOR from {from_id} at {addr}, coordinator_id={coordinator_id}, term={coordinator_term}")
 
             # Normalize coordinator_id to integer for comparison
             try:
@@ -811,6 +850,7 @@ class Node:
             # to ensure the highest available node becomes leader.
             if isinstance(coord_id_int, int) and coord_id_int < self.node_id:
                 # Reject coordinator from lower-ID node; start election to assert higher-id leadership
+                print(f"Node {self.node_id}: Rejecting COORDINATOR from lower-id {coordinator_id}, starting election")
                 self._system_log(f"Ignoring COORDINATOR from lower-id {coordinator_id}; starting election")
                 if not self.election_in_progress:
                     self.start_election()
@@ -827,15 +867,20 @@ class Node:
                 leader_key = str(coordinator_id)
                 if leader_key not in self.members:
                     self.members[leader_key] = addr
+                    print(f"Node {self.node_id}: Added new leader {coordinator_id} to members dict with address {addr}")
                     self._system_log(f"Added new leader {coordinator_id} to members dict with address {addr}")
 
                 # Update leader address from members dict or from COORDINATOR sender
                 if str(coordinator_id) in self.members:
                     self.leader_addr = self.members[str(coordinator_id)]
+                    print(f"Node {self.node_id}: Updated leader_addr to {self.leader_addr} (from members dict)")
                     self._system_log(f"Updated leader_addr from members dict: {self.leader_addr}")
                 else:
                     self.leader_addr = addr
+                    print(f"Node {self.node_id}: Updated leader_addr to {addr} (from COORDINATOR sender)")
                     self._system_log(f"Updated leader_addr from COORDINATOR sender: {self.leader_addr}")
+                
+                print(f"Node {self.node_id}: NEW LEADER IS {coordinator_id} at {self.leader_addr}")
                 
                 self.election_in_progress = False
                 self.awaiting_coordinator = False
@@ -845,6 +890,8 @@ class Node:
                 # Reset leader election timestamp if we become leader
                 if self.is_leader:
                     self.leader_election_ts = time.time()
+                # Followers do NOT reset sequence numbers - they continue expecting the next seq
+                # (sequence numbers are globally monotonic across leader transitions)
                 
                 # Reset last membership update timer (leader just announced itself)
                 self.last_membership_update = time.time()
@@ -860,10 +907,12 @@ class Node:
                 msg_id = payload.get("mid")
                 text = payload.get("text", "")
                 # Pass the original sender's ID (from_id) to preserve it in ordered messages
+                print(f"Node {self.node_id} (LEADER): Received PROPOSE from node {from_id} at {addr}: '{text}'")
                 self._system_log(f"Leader received PROPOSE from node {from_id}: '{text}'")
                 self._order_message(msg_id, payload, sender_id=from_id)
             else:
                 # Non-leader ignores PROPOSE
+                print(f"Node {self.node_id}: Ignoring PROPOSE (not leader, is_leader={self.is_leader}, leader_id={self.leader_id}): from node {from_id}")
                 self._system_log(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 pass
         
