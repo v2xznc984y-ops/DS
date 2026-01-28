@@ -174,6 +174,8 @@ class Node:
             self._system_log(f"Elected as LEADER (term={self.term})")
         else:
             self._system_log(f"Joined cluster under leader {self.leader_id} at {self.leader_addr}")
+            # Give new node time to settle and receive initial messages
+            time.sleep(0.5)
     
     def startup_discovery(self):
         """
@@ -242,8 +244,6 @@ class Node:
         while True:
             try:
                 msg, addr = recv_json(self.multicast_sock)
-                msg_type = msg.get("type", "?")
-                print(f"Node {self.node_id}: DEBUG - Multicast received: type={msg_type} from {addr}")
                 self.on_message(msg, addr, "multicast")
             except Exception as e:
                 print(f"Node {self.node_id} multicast error: {e}")
@@ -333,7 +333,8 @@ class Node:
         payload = {
             "term": self.term,
             "members": self.members,
-            "last_seen": self.last_seen
+            "last_seen": self.last_seen,
+            "next_seq": self.next_seq_to_assign  # Tell followers what sequence to expect next
         }
         msg = make_msg(MEMBERSHIP, self.node_id, self.term, payload)
         
@@ -725,8 +726,6 @@ class Node:
                         self.members[member_key] = member_addr
                         self.last_seen[member_key] = time.time()
                         
-                        print(f"\n>>> Node {self.node_id} (LEADER): NEW NODE {from_id} JOINED! Current members: {list(self.members.keys())}\n")
-                        
                         # Update vector clock to include new member WITHOUT losing current state
                         # Just add the new member to the existing clock, don't reinitialize
                         new_member_key = str(from_id)
@@ -793,7 +792,7 @@ class Node:
                 new_members = set(new_members_raw.keys())
                 
                 if old_members != new_members:
-                    print(f"\n>>> Node {self.node_id}: NEW MEMBERS - {new_members}\n")
+                    self._system_log(f"Updated membership - new members: {new_members}")
                 
                 self.term = msg_term
                 # Normalize all addresses in members dict from list to tuple (JSON converts tuples to lists)
@@ -817,6 +816,16 @@ class Node:
                     member_id_str = str(member_id)
                     if member_id_str not in self.vc.clock:
                         self.vc.clock[member_id_str] = 0
+                
+                # Sync sequence number with leader if this is new membership
+                if old_members != new_members:
+                    leader_next_seq = payload.get("next_seq", None)
+                    if leader_next_seq is not None:
+                        # Leader tells us what sequence to expect next
+                        # New nodes should start from here
+                        self.next_seq_to_deliver = leader_next_seq
+                        self.holdback = {}  # Clear any out-of-order messages from before sync
+                        self._system_log(f"Synced sequence number with leader: next_seq_to_deliver={self.next_seq_to_deliver}")
                 
                 self._system_log(f"Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
         
@@ -968,6 +977,7 @@ class Node:
             
             # Store in holdback queue
             self.holdback[seq] = chat_msg
+            print(f"Node {self.node_id}: STORED in holdback [seq={seq}] {original_sender_id}: {chat_text} (next_seq_to_deliver={self.next_seq_to_deliver})")
             
             # Send ACK back to leader
             ack_msg = make_msg(DELIVER_ACK, self.node_id, self.term, {"seq": seq, "mid": msg_id})
@@ -980,6 +990,7 @@ class Node:
             while self.next_seq_to_deliver in self.holdback:
                 chat_msg = self.holdback.pop(self.next_seq_to_deliver)
                 # Display message via UI (thread-safe, non-blocking)
+                print(f"Node {self.node_id}: DELIVERING [seq={chat_msg.sequence_number}] {chat_msg.sender_id}: {chat_msg.text}")
                 self.ui.display_message(chat_msg.sender_id, chat_msg.text, chat_msg.sequence_number)
                 self.next_seq_to_deliver += 1
         
