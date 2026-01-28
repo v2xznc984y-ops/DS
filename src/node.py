@@ -242,6 +242,8 @@ class Node:
         while True:
             try:
                 msg, addr = recv_json(self.multicast_sock)
+                msg_type = msg.get("type", "?")
+                print(f"Node {self.node_id}: DEBUG - Multicast received: type={msg_type} from {addr}")
                 self.on_message(msg, addr, "multicast")
             except Exception as e:
                 print(f"Node {self.node_id} multicast error: {e}")
@@ -722,9 +724,14 @@ class Node:
                         member_addr = (addr[0], unicast_port)
                         self.members[member_key] = member_addr
                         self.last_seen[member_key] = time.time()
-                        self._system_log(f"Added new member {from_id} to cluster")
-                        # Broadcast updated membership
-                        self._broadcast_membership()
+                        
+                        print(f"\n>>> Node {self.node_id} (LEADER): NEW NODE {from_id} JOINED! Current members: {list(self.members.keys())}\n")
+                        
+                        # Update vector clock to include new member WITHOUT losing current state
+                        # Just add the new member to the existing clock, don't reinitialize
+                        new_member_key = str(from_id)
+                        if new_member_key not in self.vc.clock:
+                            self.vc.clock[new_member_key] = 0
                 
                 # Reply with cluster info
                 payload = {
@@ -781,6 +788,13 @@ class Node:
             
             # Only accept if term >= current term
             if msg_term >= self.term:
+                old_members = set(self.members.keys())
+                new_members_raw = payload.get("members", {})
+                new_members = set(new_members_raw.keys())
+                
+                if old_members != new_members:
+                    print(f"\n>>> Node {self.node_id}: NEW MEMBERS - {new_members}\n")
+                
                 self.term = msg_term
                 # Normalize all addresses in members dict from list to tuple (JSON converts tuples to lists)
                 raw_members = payload.get("members", {})
@@ -796,8 +810,13 @@ class Node:
                 self.last_seen = {member_id: now for member_id in self.members.keys()}
                 self.last_membership_update = now
                 
-                # Reinitialize vector clock with new members
-                self.vc = VectorClock(self.node_id, [int(mid) for mid in self.members.keys()])
+                # CRITICAL: Don't reinitialize vector clock - just add new members!
+                # Reinitializing loses all causal history.
+                # Instead: add any new members with clock value 0
+                for member_id in self.members.keys():
+                    member_id_str = str(member_id)
+                    if member_id_str not in self.vc.clock:
+                        self.vc.clock[member_id_str] = 0
                 
                 self._system_log(f"Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
         
@@ -907,12 +926,10 @@ class Node:
                 msg_id = payload.get("mid")
                 text = payload.get("text", "")
                 # Pass the original sender's ID (from_id) to preserve it in ordered messages
-                print(f"Node {self.node_id} (LEADER): Received PROPOSE from node {from_id} at {addr}: '{text}'")
                 self._system_log(f"Leader received PROPOSE from node {from_id}: '{text}'")
                 self._order_message(msg_id, payload, sender_id=from_id)
             else:
                 # Non-leader ignores PROPOSE
-                print(f"Node {self.node_id}: Ignoring PROPOSE (not leader, is_leader={self.is_leader}, leader_id={self.leader_id}): from node {from_id}")
                 self._system_log(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 pass
         
@@ -927,8 +944,14 @@ class Node:
             # Get the original sender ID (preserved by leader)
             original_sender_id = payload.get("original_sender_id", from_id)
             
+            print(f"Node {self.node_id}: DEBUG - Received ORDERED seq={seq}, mid={msg_id}, from={from_id}, text='{msg_payload.get('text', '')}'")
+            
             # Update this node's vector clock based on received message
+            # If we don't have a senders node in our clock yet, add it (handles new nodes joining)
             if received_vc:
+                for node_id_str, time_val in received_vc.items():
+                    if node_id_str not in self.vc.clock:
+                        self.vc.clock[node_id_str] = 0
                 self.vc.update(received_vc)
             
             # Extract chat text from the nested payload
