@@ -75,3 +75,21 @@ def make_multicast_listener_socket(group, port):
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
     
     return sock
+
+
+def make_multicast_sender_socket():
+    """
+    Create and configure UDP socket for sending multicast messages.
+    Sets appropriate multicast socket options for sending.
+    Cross-platform compatible (macOS/Linux).
+    
+    Returns:
+        UDP socket configured for multicast sending
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    
+    # Set TTL (Time To Live) for multicast - default 1 means local network only
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
+    
+    return sock

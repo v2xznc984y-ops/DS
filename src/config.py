@@ -1,6 +1,6 @@
 # Multicast Configuration
-MCAST_GRP = "239.1.2.3"
-MCAST_PORT = 50000
+MCAST_GRP = "224.0.0.10"
+MCAST_PORT = 55000
 
 # Port Configuration
 BASE_PORT = 51000

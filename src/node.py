@@ -9,7 +9,22 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import BASE_PORT, MCAST_GRP, MCAST_PORT, DISCOVERY_RETRIES, DISCOVERY_TIMEOUT_SEC, HEARTBEAT_INTERVAL_SEC, FAILURE_TIMEOUT_SEC, ELECTION_TIMEOUT_SEC, ACK_TIMEOUT_SEC, ACK_RETRIES
 from src.protocol import make_msg, msg_id, DISCOVERY, DISCOVERY_REPLY, HEARTBEAT, MEMBERSHIP, ELECTION, ELECTION_OK, COORDINATOR, PROPOSE, ORDERED, DELIVER_ACK
-from src.net import make_unicast_socket, make_multicast_listener_socket, recv_json, send_json
+from src.net import make_unicast_socket, make_multicast_listener_socket, make_multicast_sender_socket, recv_json, send_json
+from src.ui import ChatUI
+from src.vector_clock import VectorClock
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ChatMessage:
+    """Immutable chat message after ordering via total-order multicast."""
+    sender_id: int
+    text: str
+    sequence_number: int
+    vector_clock: dict  # Vector clock of sender when message was sent
+    
+    def __str__(self):
+        return f"ChatMessage(sender={self.sender_id}, seq={self.sequence_number}, text='{self.text}', vc={self.vector_clock})"
 
 
 class Node:
@@ -30,6 +45,12 @@ class Node:
         self.members = {}  # node_id -> addr mapping
         self.last_seen = {}  # node_id -> timestamp mapping
         
+        # Initialize chat UI (non-blocking terminal display)
+        self.ui = ChatUI(node_id)
+        
+        # Vector clock for causal ordering (used in multicast messages)
+        self.vc = VectorClock(node_id)
+        
         # For discovery synchronization
         self.discovery_reply = None
         
@@ -40,6 +61,7 @@ class Node:
         self.got_ok = False
         self.last_election_start_ts = None
         self.leader_election_ts = None  # When current leader was elected (for grace period)
+        self.current_election_id = None  # Unique ID for current election to prevent timeout race conditions
         
         # Track last membership update from leader (for followers)
         self.last_membership_update = time.time()
@@ -54,8 +76,10 @@ class Node:
         self.ack_retry_count = {}  # (seq, msg_id) -> retry count
         
         # Create sockets
-        self.unicast_sock = make_unicast_socket("0.0.0.0", BASE_PORT + node_id)
+        # Use port 0 to let OS assign a free unicast port (prevents conflicts on same machine)
+        self.unicast_sock = make_unicast_socket("0.0.0.0", 0)
         self.multicast_sock = make_multicast_listener_socket(MCAST_GRP, MCAST_PORT)
+        self.multicast_sender_sock = make_multicast_sender_socket()  # Separate socket for sending multicast
         
         # Start listener threads
         self._start_listeners()
@@ -124,18 +148,32 @@ class Node:
         )
         retransmit_thread.start()
     
+    def _system_log(self, msg):
+        """
+        Log a system/control-plane message (not visible to chat UI).
+        Use this for DISCOVERY, HEARTBEAT, ELECTION, MEMBERSHIP, COORDINATOR, etc.
+        These are internal protocol messages, not user chat.
+        """
+        # System messages are logged but NOT printed to stdout/chat
+        # Uncomment below for debugging:
+        #print(f"[SYSTEM] {msg}")
+        pass
+    
     def start(self):
         """Start node: begin listeners, then perform discovery."""
-        print(f"Node {self.node_id}: Starting listeners...")
+        # Start UI thread first
+        self.ui.start()
+        
+        self._system_log("Starting listeners...")
         time.sleep(0.1)  # Brief delay to ensure threads start
         
-        print(f"Node {self.node_id}: Beginning discovery...")
+        self._system_log("Beginning discovery...")
         self.startup_discovery()
         
         if self.is_leader:
-            print(f"Node {self.node_id}: Elected as LEADER (term={self.term})")
+            self._system_log(f"Elected as LEADER (term={self.term})")
         else:
-            print(f"Node {self.node_id}: Joined cluster under leader {self.leader_id} at {self.leader_addr}")
+            self._system_log(f"Joined cluster under leader {self.leader_id} at {self.leader_addr}")
     
     def startup_discovery(self):
         """
@@ -153,7 +191,7 @@ class Node:
             # Multicast discovery message
             msg = make_msg(DISCOVERY, self.node_id, self.term, {"unicast_port": unicast_port})
             send_json(mcast_send_sock, (MCAST_GRP, MCAST_PORT), msg)
-            print(f"Node {self.node_id}: Sent DISCOVERY (attempt {attempt + 1}/{DISCOVERY_RETRIES})")
+            self._system_log(f"Sent DISCOVERY (attempt {attempt + 1}/{DISCOVERY_RETRIES})")
             
             # Wait for reply from listener thread
             time.sleep(DISCOVERY_TIMEOUT_SEC)
@@ -179,22 +217,10 @@ class Node:
                 now = time.time()
                 self.last_seen = {member_id: now for member_id in self.members.keys()}
                 
-                print(f"Node {self.node_id}: Received DISCOVERY_REPLY from leader {self.leader_id}")
-                # Enforce bully rule: never accept a leader with lower numeric ID
-                try:
-                    leader_id_int = int(self.leader_id) if self.leader_id is not None else None
-                except Exception:
-                    leader_id_int = self.leader_id
-
-                if isinstance(leader_id_int, int) and leader_id_int < self.node_id:
-                    # Ignore this discovery reply and start an election to assert higher-id leadership
-                    print(f"Node {self.node_id}: Ignoring discovered leader {self.leader_id} because it's lower-id; starting election")
-                    # Clear discovery reply so we don't reprocess it
-                    self.discovery_reply = None
-                    mcast_send_sock.close()
-                    # Start election to try to become/activate a higher-id leader
-                    self.start_election()
-                    return
+                # Initialize vector clock with all members from cluster
+                self.vc = VectorClock(self.node_id, [int(mid) for mid in self.members.keys()])
+                
+                self._system_log(f"Received DISCOVERY_REPLY from leader {self.leader_id}")
                 mcast_send_sock.close()
                 return
         
@@ -206,8 +232,10 @@ class Node:
         # Use string keys for members to keep JSON and runtime consistent
         self.members[str(self.node_id)] = self.leader_addr
         self.last_seen[str(self.node_id)] = time.time()
+        # Initialize vector clock with just this node
+        self.vc = VectorClock(self.node_id, [self.node_id])
         mcast_send_sock.close()
-        print(f"Node {self.node_id}: No leader found, self-electing as leader")
+        self._system_log("No leader found, self-electing")
     
     def _multicast_listener(self):
         """Listen for multicast messages and dispatch to on_message."""
@@ -279,6 +307,7 @@ class Node:
                 # Remove failed nodes and broadcast
                 for node_id in failed_nodes:
                     print(f"Node {self.node_id}: Detected failure of node {node_id} (no heartbeat for {FAILURE_TIMEOUT_SEC}s)")
+                    self._system_log(f"Detected failure of node {node_id} (no heartbeat for {FAILURE_TIMEOUT_SEC}s)")
                     if node_id in self.members:
                         del self.members[node_id]
                     if node_id in self.last_seen:
@@ -333,11 +362,19 @@ class Node:
         self.election_in_progress = True
         self.awaiting_coordinator = False
         self.got_ok = False  # Reset OK flag for this election
+        
+        # Generate unique election ID to prevent timeout race conditions
+        # If a COORDINATOR arrives before timeout, this election_id will be stale
+        import uuid
+        self.current_election_id = str(uuid.uuid4())
+        election_id = self.current_election_id
+        
         # NOTE: Do NOT increment term here. In Bully algorithm, leadership is determined
         # solely by node_id, not by term/epoch. Only COORDINATOR messages carry new terms.
         self.last_election_start_ts = time.time()
         
         print(f"Node {self.node_id}: Starting election (term={self.term})")
+        self._system_log(f"Starting election (term={self.term})")
         
         # Get IDs of peers with higher node_id
         higher = self.higher_ids()
@@ -354,9 +391,9 @@ class Node:
                     peer_addr = self.members[peer_key]
                     try:
                         send_json(self.unicast_sock, peer_addr, msg)
-                        print(f"Node {self.node_id}: Sent ELECTION to higher peer {peer_id}")
+                        self._system_log(f"Sent ELECTION to higher peer {peer_id}")
                     except Exception as e:
-                        print(f"Node {self.node_id}: Failed to send ELECTION to {peer_id}: {e}")
+                        self._system_log(f"Failed to send ELECTION to {peer_id}: {e}")
             
             # Wait for OK response
             self.awaiting_coordinator = True
@@ -365,11 +402,17 @@ class Node:
             def election_timeout():
                 time.sleep(ELECTION_TIMEOUT_SEC)
                 
+                # Only proceed if this is still the current election
+                # (COORDINATOR may have arrived and started a new election)
+                if self.current_election_id != election_id:
+                    return  # Stale election timeout, ignore
+                
                 # Only become leader if we did NOT receive any OK response
                 # (got_ok is set to True when ELECTION_OK arrives)
                 if not self.got_ok:
                     # No OK received - become leader
                     print(f"Node {self.node_id}: No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
+                    self._system_log(f"No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
                     self._become_leader()
             
             timeout_thread = threading.Thread(target=election_timeout, daemon=True)
@@ -398,6 +441,7 @@ class Node:
                 
                 if now - last_seen_time > FAILURE_TIMEOUT_SEC:
                     print(f"Node {self.node_id}: Leader {self.leader_id} appears to be dead (no message for {FAILURE_TIMEOUT_SEC}s)")
+                    self._system_log(f"Leader {self.leader_id} appears dead (no message for {FAILURE_TIMEOUT_SEC}s)")
                     self.start_election()
                     break  # Stop checking once we start election
             
@@ -424,8 +468,8 @@ class Node:
         """Read user input from stdin and propose messages."""
         while True:
             try:
-                # Read line from stdin
-                text = input()
+                # Read line from stdin (input() shows its own prompt)
+                text = input(f"Node {self.node_id}> ")
                 if not text.strip():
                     continue
                 
@@ -438,41 +482,77 @@ class Node:
                     self._order_message(mid, payload)
                 else:
                     # Follower sends PROPOSE to leader
+                    if not self.leader_addr:
+                        self._system_log(f"Error: Don't know leader address yet, cannot send message. Wait for discovery.")
+                        continue
+                    
                     propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
                     try:
+                        self._system_log(f"Sending PROPOSE to leader {self.leader_id} at {self.leader_addr}")
                         send_json(self.unicast_sock, self.leader_addr, propose_msg)
-                        print(f"Node {self.node_id}: Proposed message '{text}'")
+                        self._system_log(f"Proposed message '{text}'")
                     except Exception as e:
-                        print(f"Node {self.node_id}: Failed to send PROPOSE to leader: {e}")
+                        self._system_log(f"Failed to send PROPOSE to leader: {e}")
             
             except Exception as e:
                 # Ignore input errors, continue loop
                 pass
     
-    def _order_message(self, msg_id, payload):
-        """Leader orders a message with a sequence number."""
+    def _order_message(self, msg_id, payload, sender_id=None):
+        """
+        Leader orders a message with a sequence number.
+        
+        Args:
+            msg_id: Unique message identifier
+            payload: Message payload dict with "text" and other data
+            sender_id: Original sender's node ID (if None, defaults to leader's ID)
+        """
+        # If sender_id not provided, use leader's ID (for messages sent directly by leader)
+        if sender_id is None:
+            sender_id = self.node_id
+        
+        # Increment vector clock when ordering a message
+        self.vc.increment()
+        
         # Assign sequence number
         seq = self.next_seq_to_assign
         self.next_seq_to_assign += 1
         
-        # Create ORDERED message
+        # Get current vector clock as snapshot
+        vc_snapshot = self.vc.get_clock()
+        
+        # Create ORDERED message with vector clock and original sender ID
         ordered_payload = {
             "seq": seq,
             "mid": msg_id,
-            "payload": payload
+            "payload": payload,
+            "vc": vc_snapshot,  # Include vector clock for causal ordering
+            "original_sender_id": sender_id  # Preserve original sender ID
         }
         ordered_msg = make_msg(ORDERED, self.node_id, self.term, ordered_payload)
         
-        # Send to all members (including self for consistency)
-        for member_id, addr in list(self.members.items()):
-            try:
-                # Convert addr to tuple if it's a list (from JSON)
-                if isinstance(addr, list):
-                    addr = tuple(addr)
-                send_json(self.unicast_sock, addr, ordered_msg)
-            except Exception as e:
-                # Silently skip dead nodes
-                pass
+        # Send to all group members via multicast (includes all followers)
+        # This is more efficient than unicast to each member individually
+        # Use dedicated multicast sender socket (not unicast socket)
+        try:
+            send_json(self.multicast_sender_sock, (MCAST_GRP, MCAST_PORT), ordered_msg)
+            self._system_log(f"Multicast ORDERED message seq={seq} to group")
+        except Exception as e:
+            self._system_log(f"Failed to multicast ORDERED message: {e}")
+        
+        # Leader delivers its own message locally (don't send to self via network)
+        # This avoids UDP loopback issues and ensures synchronous delivery
+        chat_text = payload.get("text", "")
+        # Use the original sender_id for the ChatMessage
+        chat_msg = ChatMessage(sender_id=sender_id, text=chat_text, sequence_number=seq, vector_clock=vc_snapshot)
+        
+        # Store in holdback queue and deliver if it's next in sequence
+        self.holdback[seq] = chat_msg
+        while self.next_seq_to_deliver in self.holdback:
+            deliver_msg = self.holdback.pop(self.next_seq_to_deliver)
+            # Display message via UI (thread-safe, non-blocking)
+            self.ui.display_message(deliver_msg.sender_id, deliver_msg.text, deliver_msg.sequence_number)
+            self.next_seq_to_deliver += 1
         
         # Initialize pending ACKs for this (seq, msg_id)
         # Track which members need to ACK (all except leader itself)
@@ -483,7 +563,7 @@ class Node:
                 pending_set.add(member_id)
         
         self.pending_acks[(seq, msg_id)] = pending_set
-        print(f"Node {self.node_id}: Ordered message seq={seq}, mid={msg_id}, waiting for ACKs from {len(pending_set)} peers")
+        self._system_log(f"Ordered message seq={seq}, mid={msg_id}, from node {sender_id}, waiting for ACKs from {len(pending_set)} peers")
     
     def _retransmit_loop(self):
         """Periodically retransmit ORDERED messages to peers missing ACKs."""
@@ -508,7 +588,7 @@ class Node:
                 # Check if exceeded max retries
                 if self.ack_retry_count[(seq, msg_id)] > ACK_RETRIES:
                     # Treat missing peers as failed - remove from members
-                    print(f"Node {self.node_id}: Max retries exceeded for (seq={seq}, mid={msg_id}). Removing {len(missing_peers)} peers from cluster")
+                    self._system_log(f"Max retries exceeded for (seq={seq}, mid={msg_id}). Removing {len(missing_peers)} peers from cluster")
                     
                     for peer_id in missing_peers:
                         if peer_id in self.members:
@@ -522,7 +602,7 @@ class Node:
                     continue
                 
                 # Resend ORDERED to peers still missing ACK
-                print(f"Node {self.node_id}: Retransmitting (seq={seq}, mid={msg_id}) to {len(missing_peers)} peers (retry #{self.ack_retry_count[(seq, msg_id)]})")
+                self._system_log(f"Retransmitting (seq={seq}, mid={msg_id}) to {len(missing_peers)} peers (retry #{self.ack_retry_count[(seq, msg_id)]})")
                 
                 # Reconstruct and resend ORDERED message to missing peers
                 ordered_payload = {
@@ -551,7 +631,8 @@ class Node:
         self.awaiting_coordinator = False
         self.leader_election_ts = time.time()  # Mark when we became leader
         
-        print(f"Node {self.node_id}: Elected as NEW LEADER (term={self.term})")
+        print(f"\n[NEW LEADER] Node {self.node_id} is leader, unicast socket at {self.leader_addr}\n")
+        self._system_log(f"Elected as NEW LEADER (term={self.term}), listening at {self.leader_addr}")
         
         # Initialize members dict if empty
         if not self.members:
@@ -562,6 +643,9 @@ class Node:
         # This gives followers time to respond to COORDINATOR before we mark them as dead
         now = time.time()
         self.last_seen = {member_id: now for member_id in self.members.keys()}
+        
+        # Reinitialize vector clock with current members
+        self.vc = VectorClock(self.node_id, [int(mid) for mid in self.members.keys()])
         
         # Broadcast COORDINATOR to all peers first (before removing any nodes)
         msg = make_msg(COORDINATOR, self.node_id, self.term, {"leader_id": self.node_id})
@@ -578,9 +662,10 @@ class Node:
                 if isinstance(addr, list):
                     addr = tuple(addr)
                 send_json(self.unicast_sock, addr, msg)
+                self._system_log(f"Sent COORDINATOR to node {member_id} at {addr}")
             except Exception as e:
                 # Silently skip dead nodes
-                pass
+                self._system_log(f"Failed to send COORDINATOR to node {member_id}: {e}")
         
         # Broadcast updated membership
         self._broadcast_membership()
@@ -615,7 +700,7 @@ class Node:
                         member_addr = (addr[0], unicast_port)
                         self.members[member_key] = member_addr
                         self.last_seen[member_key] = time.time()
-                        print(f"Node {self.node_id}: Added new member {from_id} to cluster")
+                        self._system_log(f"Added new member {from_id} to cluster")
                         # Broadcast updated membership
                         self._broadcast_membership()
                 
@@ -633,12 +718,12 @@ class Node:
                 if unicast_port:
                     reply_addr = (addr[0], unicast_port)
                     send_json(self.unicast_sock, reply_addr, reply)
-                    print(f"Node {self.node_id}: Responded to DISCOVERY from node {from_id} at {reply_addr}")
+                    self._system_log(f"Responded to DISCOVERY from node {from_id} at {reply_addr}")
         
         elif msg_type == DISCOVERY_REPLY:
             # Store reply for startup_discovery to process
             self.discovery_reply = (msg, addr)
-            print(f"Node {self.node_id}: Listener got DISCOVERY_REPLY from {addr}")
+            self._system_log(f"Listener got DISCOVERY_REPLY from {addr}")
         
         elif msg_type == HEARTBEAT:
             # Received heartbeat from a peer
@@ -674,7 +759,10 @@ class Node:
                 self.last_seen = {member_id: now for member_id in self.members.keys()}
                 self.last_membership_update = now
                 
-                print(f"Node {self.node_id}: Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
+                # Reinitialize vector clock with new members
+                self.vc = VectorClock(self.node_id, [int(mid) for mid in self.members.keys()])
+                
+                self._system_log(f"Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
         
         elif msg_type == ELECTION:
             # Received election from lower ID peer
@@ -684,9 +772,9 @@ class Node:
                 ok_msg = make_msg(ELECTION_OK, self.node_id, self.term)
                 try:
                     send_json(self.unicast_sock, addr, ok_msg)
-                    print(f"Node {self.node_id}: Received ELECTION from node {sender_id}, sent OK")
+                    self._system_log(f"Received ELECTION from node {sender_id}, sent OK")
                 except Exception as e:
-                    print(f"Node {self.node_id}: Failed to send OK to {sender_id}: {e}")
+                    self._system_log(f"Failed to send OK to {sender_id}: {e}")
                 
                 # Start own election if not already in progress
                 if not self.election_in_progress:
@@ -697,7 +785,7 @@ class Node:
             # Mark that we received an OK so election timeout won't make us leader
             self.got_ok = True
             self.awaiting_coordinator = True
-            print(f"Node {self.node_id}: Received OK from node {from_id}, awaiting coordinator")
+            self._system_log(f"Received OK from node {from_id}, awaiting coordinator")
             
             # Reset the election timeout when we receive an OK
             # (the higher node is running, so it will elect)
@@ -723,7 +811,7 @@ class Node:
             # to ensure the highest available node becomes leader.
             if isinstance(coord_id_int, int) and coord_id_int < self.node_id:
                 # Reject coordinator from lower-ID node; start election to assert higher-id leadership
-                print(f"Node {self.node_id}: Ignoring COORDINATOR from lower-id {coordinator_id}; starting election")
+                self._system_log(f"Ignoring COORDINATOR from lower-id {coordinator_id}; starting election")
                 if not self.election_in_progress:
                     self.start_election()
                 return
@@ -735,15 +823,24 @@ class Node:
                 # Normalize leader flag
                 self.is_leader = (coord_id_int == self.node_id)
 
-                # Update leader address from members dict (members use string keys)
+                # Ensure new leader is in members dict (important if joining nodes or recovering)
+                leader_key = str(coordinator_id)
+                if leader_key not in self.members:
+                    self.members[leader_key] = addr
+                    self._system_log(f"Added new leader {coordinator_id} to members dict with address {addr}")
+
+                # Update leader address from members dict or from COORDINATOR sender
                 if str(coordinator_id) in self.members:
                     self.leader_addr = self.members[str(coordinator_id)]
+                    self._system_log(f"Updated leader_addr from members dict: {self.leader_addr}")
                 else:
                     self.leader_addr = addr
+                    self._system_log(f"Updated leader_addr from COORDINATOR sender: {self.leader_addr}")
                 
                 self.election_in_progress = False
                 self.awaiting_coordinator = False
                 self.got_ok = False  # Reset OK flag when new coordinator is established
+                self.current_election_id = None  # Clear election ID to prevent timeout race conditions
                 
                 # Reset leader election timestamp if we become leader
                 if self.is_leader:
@@ -752,16 +849,22 @@ class Node:
                 # Reset last membership update timer (leader just announced itself)
                 self.last_membership_update = time.time()
                 
-                print(f"Node {self.node_id}: Received COORDINATOR - new leader is {coordinator_id} (term={coordinator_term})")
+                # Print visible message for users when new leader is elected
+                print(f"\n[ELECTION RESULT] Node {coordinator_id} elected as NEW LEADER (term={coordinator_term})\n")
+                self._system_log(f"Received COORDINATOR - new leader is {coordinator_id} (term={coordinator_term})")
         
         elif msg_type == PROPOSE:
             # Received message proposal from peer (leader only)
             if self.is_leader:
                 payload = msg.get("payload", {})
                 msg_id = payload.get("mid")
-                self._order_message(msg_id, payload)
+                text = payload.get("text", "")
+                # Pass the original sender's ID (from_id) to preserve it in ordered messages
+                self._system_log(f"Leader received PROPOSE from node {from_id}: '{text}'")
+                self._order_message(msg_id, payload, sender_id=from_id)
             else:
                 # Non-leader ignores PROPOSE
+                self._system_log(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 pass
         
         elif msg_type == ORDERED:
@@ -770,22 +873,42 @@ class Node:
             seq = payload.get("seq")
             msg_id = payload.get("mid")
             msg_payload = payload.get("payload", {})
+            received_vc = payload.get("vc", {})  # Extract vector clock from message
+            
+            # Get the original sender ID (preserved by leader)
+            original_sender_id = payload.get("original_sender_id", from_id)
+            
+            # Update this node's vector clock based on received message
+            if received_vc:
+                self.vc.update(received_vc)
+            
+            # Extract chat text from the nested payload
+            chat_text = msg_payload.get("text", "")
+            if not chat_text:
+                # Debug: log what we received
+                self._system_log(f"DEBUG: msg_payload={msg_payload}, full_payload={payload}")
+            
+            # Get current vector clock as snapshot for this message
+            vc_snapshot = self.vc.get_clock()
+            
+            # Create immutable ChatMessage object with ORIGINAL sender_id and vector clock
+            chat_msg = ChatMessage(sender_id=original_sender_id, text=chat_text, sequence_number=seq, vector_clock=vc_snapshot)
             
             # Store in holdback queue
-            self.holdback[seq] = {"msg_id": msg_id, "payload": msg_payload}
+            self.holdback[seq] = chat_msg
             
             # Send ACK back to leader
             ack_msg = make_msg(DELIVER_ACK, self.node_id, self.term, {"seq": seq, "mid": msg_id})
             try:
                 send_json(self.unicast_sock, self.leader_addr, ack_msg)
             except Exception as e:
-                print(f"Node {self.node_id}: Failed to send DELIVER_ACK to leader: {e}")
+                self._system_log(f"Failed to send DELIVER_ACK to leader: {e}")
             
             # Deliver all messages with seq == next_seq_to_deliver in order
             while self.next_seq_to_deliver in self.holdback:
-                msg_to_deliver = self.holdback.pop(self.next_seq_to_deliver)
-                delivered_text = msg_to_deliver.get("payload", {}).get("text", "")
-                print(f"Node {self.node_id}: DELIVERED message seq={self.next_seq_to_deliver}: '{delivered_text}'")
+                chat_msg = self.holdback.pop(self.next_seq_to_deliver)
+                # Display message via UI (thread-safe, non-blocking)
+                self.ui.display_message(chat_msg.sender_id, chat_msg.text, chat_msg.sequence_number)
                 self.next_seq_to_deliver += 1
         
         elif msg_type == DELIVER_ACK:
@@ -806,4 +929,4 @@ class Node:
                         del self.pending_acks[key]
                         if key in self.ack_retry_count:
                             del self.ack_retry_count[key]
-                        print(f"Node {self.node_id}: All peers ACKed (seq={seq}, mid={msg_id})")
+                        self._system_log(f"All peers ACKed (seq={seq}, mid={msg_id})")
