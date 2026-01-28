@@ -173,6 +173,20 @@ class Node:
         #print(f"[SYSTEM] {msg}")
         pass
     
+    def _display_members(self):
+        """Display current members list."""
+        if not self.members:
+            print(f"\nNode {self.node_id}: [MEMBERS] Empty cluster")
+            return
+        
+        member_list = []
+        for member_id in sorted(self.members.keys(), key=lambda x: int(x)):
+            addr = self.members[member_id]
+            status = "LEADER" if int(member_id) == self.leader_id else "FOLLOWER"
+            member_list.append(f"Node {member_id} ({status})")
+        
+        print(f"\nNode {self.node_id}: [MEMBERS] {len(self.members)} nodes: {', '.join(member_list)}\n")
+    
     def start(self):
         """Start node: begin listeners, then perform discovery."""
         # Start UI thread first
@@ -628,6 +642,8 @@ class Node:
                         if peer_id in self.members:
                             del self.members[peer_id]
                     
+                    self._display_members()
+                    
                     # Broadcast updated membership
                     self._broadcast_membership()
                     
@@ -805,6 +821,7 @@ class Node:
                         member_addr = (addr[0], unicast_port)
                         self.members[member_key] = member_addr
                         self.last_seen[member_key] = time.time()
+                        self._display_members()
                         
                         # Update vector clock to include new member WITHOUT losing current state
                         # Just add the new member to the existing clock, don't reinitialize
@@ -871,7 +888,8 @@ class Node:
                 new_members_raw = payload.get("members", {})
                 new_members = set(new_members_raw.keys())
                 
-                if old_members != new_members:
+                members_changed = old_members != new_members
+                if members_changed:
                     self._system_log(f"Updated membership - new members: {new_members}")
                 
                 self.term = msg_term
@@ -896,6 +914,9 @@ class Node:
                     member_id_str = str(member_id)
                     if member_id_str not in self.vc.clock:
                         self.vc.clock[member_id_str] = 0
+                
+                if members_changed:
+                    self._display_members()
                 
                 # Sync sequence number with leader if this is new membership
                 if old_members != new_members:
