@@ -3,6 +3,7 @@ import time
 import sys
 import os
 import socket
+import logging
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -38,6 +39,18 @@ class Node:
             node_id: Unique integer identifier for this node
         """
         self.node_id = node_id
+        
+        # Setup logging for debug messages
+        log_filename = f"node_{node_id}.log"
+        logging.basicConfig(
+            filename=log_filename,
+            level=logging.DEBUG,
+            format='%(asctime)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        self.logger = logging.getLogger(f"Node-{node_id}")
+        self.logger.info(f"Node {node_id} started")
+        
         self.term = 0
         self.is_leader = False
         self.leader_id = None
@@ -519,16 +532,16 @@ class Node:
                     # Follower sends PROPOSE to leader
                     if not self.leader_addr:
                         self._system_log(f"Error: Don't know leader address yet, cannot send message. Wait for discovery.")
-                        print(f"Node {self.node_id}: DEBUG - leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
+                        self.logger.debug(f"leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
                         continue
                     
                     propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
                     try:
                         self._system_log(f"Sending PROPOSE to leader {self.leader_id} at {self.leader_addr}")
-                        print(f"Node {self.node_id}: DEBUG - Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
+                        self.logger.debug(f"Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
                         send_json(self.unicast_sock, self.leader_addr, propose_msg)
                         self._system_log(f"Proposed message '{text}'")
-                        print(f"Node {self.node_id}: Message sent successfully")
+                        self.logger.debug(f"Message sent successfully")
                         
                         # Track this PROPOSE for reliable delivery
                         self.pending_proposes[mid] = {
@@ -540,7 +553,7 @@ class Node:
                         self._system_log(f"Tracking PROPOSE {mid} for reliable delivery")
                     except Exception as e:
                         self._system_log(f"Failed to send PROPOSE to leader: {e}")
-                        print(f"Node {self.node_id}: DEBUG - Failed to send PROPOSE: {e}")
+                        self.logger.debug(f"Failed to send PROPOSE: {e}")
             
             except Exception as e:
                 # Ignore input errors, continue loop
@@ -1054,7 +1067,7 @@ class Node:
             # Get the original sender ID (preserved by leader)
             original_sender_id = payload.get("original_sender_id", from_id)
             
-            print(f"Node {self.node_id}: DEBUG - Received ORDERED seq={seq}, mid={msg_id}, from={from_id}, text='{msg_payload.get('text', '')}'")
+            self.logger.debug(f"Received ORDERED seq={seq}, mid={msg_id}, from={from_id}, text='{msg_payload.get('text', '')}'")
             
             # Update this node's vector clock based on received message
             # If we don't have a senders node in our clock yet, add it (handles new nodes joining)
@@ -1078,7 +1091,7 @@ class Node:
             
             # Store in holdback queue
             self.holdback[seq] = chat_msg
-            print(f"Node {self.node_id}: STORED in holdback [seq={seq}] {original_sender_id}: {chat_text} (next_seq_to_deliver={self.next_seq_to_deliver})")
+            self.logger.debug(f"STORED in holdback [seq={seq}] {original_sender_id}: {chat_text} (next_seq_to_deliver={self.next_seq_to_deliver})")
             
             # Clean up reliable delivery tracking if this was our PROPOSE
             if msg_id in self.pending_proposes:
@@ -1096,7 +1109,7 @@ class Node:
             while self.next_seq_to_deliver in self.holdback:
                 chat_msg = self.holdback.pop(self.next_seq_to_deliver)
                 # Display message via UI (thread-safe, non-blocking)
-                print(f"Node {self.node_id}: DELIVERING [seq={chat_msg.sequence_number}] {chat_msg.sender_id}: {chat_msg.text}")
+                self.logger.debug(f"DELIVERING [seq={chat_msg.sequence_number}] {chat_msg.sender_id}: {chat_msg.text}")
                 self.ui.display_message(chat_msg.sender_id, chat_msg.text, chat_msg.sequence_number)
                 self.next_seq_to_deliver += 1
         
