@@ -16,16 +16,15 @@ def main():
     
     args = parser.parse_args()
     
-    print(f"Starting Node {args.id}...")
     node = Node(args.id)
-    node.start()  # Begin discovery
+    node.start()  # Begin discovery and show GUI
     
-    print(f"Node {args.id} running. Press Ctrl+C to stop.")
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print(f"\nNode {args.id} shutting down...")
+        # Save logs before exiting
+        node.ui.save_logs()
         sys.exit(0)
 
 

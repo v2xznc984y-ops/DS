@@ -164,14 +164,11 @@ class Node:
     
     def _system_log(self, msg):
         """
-        Log a system/control-plane message (not visible to chat UI).
+        Log a system/control-plane message to debug UI.
         Use this for DISCOVERY, HEARTBEAT, ELECTION, MEMBERSHIP, COORDINATOR, etc.
         These are internal protocol messages, not user chat.
         """
-        # System messages are logged but NOT printed to stdout/chat
-        # Uncomment below for debugging:
-        #print(f"[SYSTEM] {msg}")
-        pass
+        self.ui.display_debug(msg)
     
     def _display_members(self):
         """Display current members list."""
@@ -500,12 +497,17 @@ class Node:
                 print(f"Node {self.node_id} membership broadcast error: {e}")
     
     def _cli_input_loop(self):
-        """Read user input from stdin and propose messages."""
+        """Read user input from GUI and propose messages."""
         while True:
             try:
-                # Read line from stdin (input() shows its own prompt)
-                text = input(f"Node {self.node_id}> ")
-                if not text.strip():
+                # Get input from GUI input queue
+                text = None
+                try:
+                    text = self.ui.input_queue.get(timeout=0.5)
+                except:
+                    continue
+                
+                if not text or not text.strip():
                     continue
                 
                 # Create message with unique ID
@@ -519,16 +521,16 @@ class Node:
                     # Follower sends PROPOSE to leader
                     if not self.leader_addr:
                         self._system_log(f"Error: Don't know leader address yet, cannot send message. Wait for discovery.")
-                        print(f"Node {self.node_id}: DEBUG - leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
+                        self._system_log(f"DEBUG - leader_id={self.leader_id}, leader_addr={self.leader_addr}, members={self.members}")
                         continue
                     
                     propose_msg = make_msg(PROPOSE, self.node_id, self.term, payload)
                     try:
                         self._system_log(f"Sending PROPOSE to leader {self.leader_id} at {self.leader_addr}")
-                        print(f"Node {self.node_id}: DEBUG - Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
+                        self._system_log(f"DEBUG - Attempting to send PROPOSE to {self.leader_addr}, leader_id={self.leader_id}, is_leader={self.is_leader}, term={self.term}")
                         send_json(self.unicast_sock, self.leader_addr, propose_msg)
                         self._system_log(f"Proposed message '{text}'")
-                        print(f"Node {self.node_id}: Message sent successfully")
+                        self._system_log(f"Message sent successfully")
                         
                         # Track this PROPOSE for reliable delivery
                         self.pending_proposes[mid] = {
@@ -540,7 +542,7 @@ class Node:
                         self._system_log(f"Tracking PROPOSE {mid} for reliable delivery")
                     except Exception as e:
                         self._system_log(f"Failed to send PROPOSE to leader: {e}")
-                        print(f"Node {self.node_id}: DEBUG - Failed to send PROPOSE: {e}")
+                        self._system_log(f"DEBUG - Failed to send PROPOSE: {e}")
             
             except Exception as e:
                 # Ignore input errors, continue loop
