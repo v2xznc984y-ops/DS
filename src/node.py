@@ -187,18 +187,23 @@ class Node:
         pass
     
     def _display_members(self):
-        """Display current members list."""
+        """Display current members list with proper leader/follower designation."""
         if not self.members:
             print(f"\nNode {self.node_id}: [MEMBERS] Empty cluster")
+            self.logger.info(f"Display Members: Empty cluster")
             return
         
         member_list = []
         for member_id in sorted(self.members.keys(), key=lambda x: int(x)):
             addr = self.members[member_id]
-            status = "LEADER" if int(member_id) == self.leader_id else "FOLLOWER"
+            # Determine if this member is the leader
+            member_id_int = int(member_id) if isinstance(member_id, str) else member_id
+            status = "LEADER" if member_id_int == self.leader_id else "FOLLOWER"
             member_list.append(f"Node {member_id} ({status})")
         
-        print(f"\nNode {self.node_id}: [MEMBERS] {len(self.members)} nodes: {', '.join(member_list)}\n")
+        members_str = ', '.join(member_list)
+        print(f"\nNode {self.node_id}: [MEMBERS] {len(self.members)} nodes: {members_str}\n")
+        self.logger.info(f"DISPLAY MEMBERS: {len(self.members)} nodes: {members_str}")
     
     def start(self):
         """Start node: begin listeners, then perform discovery."""
@@ -312,10 +317,10 @@ class Node:
                     payload = {"max_seq_delivered": max_seq_delivered}
                     msg = make_msg(HEARTBEAT, self.node_id, self.term, payload)
                     send_json(self.unicast_sock, self.leader_addr, msg)
-                    # Uncomment for debugging:
-                    # print(f"Node {self.node_id}: Sent HEARTBEAT to leader at {self.leader_addr} (max_seq={max_seq_delivered})")
+                    self.logger.debug(f"SENT HEARTBEAT to leader {self.leader_id} at {self.leader_addr} (max_seq_delivered={max_seq_delivered})")
             except Exception as e:
                 print(f"Node {self.node_id} heartbeat error: {e}")
+                self.logger.error(f"Heartbeat loop error: {e}")
     
     def _failure_detector_loop(self):
         """Detect failed nodes by checking last_seen timestamps (leader only)."""
@@ -354,6 +359,7 @@ class Node:
                 # Remove failed nodes and broadcast
                 for node_id in failed_nodes:
                     print(f"Node {self.node_id}: Detected failure of node {node_id} (no heartbeat for {FAILURE_TIMEOUT_SEC}s)")
+                    self.logger.warning(f"Detected failure of node {node_id} (no heartbeat for {FAILURE_TIMEOUT_SEC}s) - removing from cluster")
                     self._system_log(f"Detected failure of node {node_id} (no heartbeat for {FAILURE_TIMEOUT_SEC}s)")
                     if node_id in self.members:
                         del self.members[node_id]
@@ -375,9 +381,19 @@ class Node:
             "term": self.term,
             "members": self.members,
             "last_seen": self.last_seen,
-            "next_seq": self.next_seq_to_assign  # Tell followers what sequence to expect next
+            "next_seq": self.next_seq_to_assign,  # Tell followers what sequence to expect next
+            "leader_id": self.leader_id  # Include leader_id so followers know who the leader is
         }
         msg = make_msg(MEMBERSHIP, self.node_id, self.term, payload)
+        
+        # Format members list with role information for logging
+        members_with_roles = []
+        for member_id in sorted(self.members.keys(), key=lambda x: int(x)):
+            role = "LEADER" if int(member_id) == self.leader_id else "FOLLOWER"
+            members_with_roles.append(f"Node {member_id}({role})")
+        members_str = ", ".join(members_with_roles)
+        
+        self.logger.info(f"BROADCAST MEMBERSHIP: term={self.term}, members=[{members_str}], next_seq={self.next_seq_to_assign}")
         
         # Send to all peers (skip those that fail)
         for member_id, addr in list(self.members.items()):
@@ -394,9 +410,10 @@ class Node:
                 if isinstance(addr, list):
                     addr = tuple(addr)
                 send_json(self.unicast_sock, addr, msg)
+                self.logger.debug(f"Sent MEMBERSHIP to node {member_id} at {addr}")
             except Exception as e:
                 # Don't print every error, just silently skip
-                pass
+                self.logger.debug(f"Failed to send MEMBERSHIP to node {member_id}: {e}")
     
     def higher_ids(self):
         """Return list of member IDs greater than this node's ID."""
@@ -422,6 +439,7 @@ class Node:
         self.last_election_start_ts = time.time()
         
         print(f"Node {self.node_id}: Starting election (term={self.term})")
+        self.logger.warning(f"STARTED ELECTION: term={self.term}, election_id={election_id}")
         self._system_log(f"Starting election (term={self.term})")
         
         # Get IDs of peers with higher node_id
@@ -429,18 +447,22 @@ class Node:
         
         if not higher:
             # No higher IDs - self becomes leader
+            self.logger.info(f"No higher node IDs found, becoming leader")
             self._become_leader()
         else:
             # Send ELECTION to all higher IDs
             msg = make_msg(ELECTION, self.node_id, self.term)
+            self.logger.debug(f"Sending ELECTION to {len(higher)} higher peers: {higher}")
             for peer_id in higher:
                 peer_key = str(peer_id)
                 if peer_key in self.members:
                     peer_addr = self.members[peer_key]
                     try:
                         send_json(self.unicast_sock, peer_addr, msg)
+                        self.logger.debug(f"Sent ELECTION message to peer {peer_id} at {peer_addr}")
                         self._system_log(f"Sent ELECTION to higher peer {peer_id}")
                     except Exception as e:
+                        self.logger.error(f"Failed to send ELECTION to {peer_id}: {e}")
                         self._system_log(f"Failed to send ELECTION to {peer_id}: {e}")
             
             # Wait for OK response
@@ -453,6 +475,7 @@ class Node:
                 # Only proceed if this is still the current election
                 # (COORDINATOR may have arrived and started a new election)
                 if self.current_election_id != election_id:
+                    self.logger.debug(f"Election {election_id} timeout ignored - newer election in progress")
                     return  # Stale election timeout, ignore
                 
                 # Only become leader if we did NOT receive any OK response
@@ -460,6 +483,7 @@ class Node:
                 if not self.got_ok:
                     # No OK received - become leader
                     print(f"Node {self.node_id}: No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
+                    self.logger.warning(f"ELECTION TIMEOUT: no OK received in {ELECTION_TIMEOUT_SEC}s, becoming leader")
                     self._system_log(f"No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
                     self._become_leader()
             
@@ -582,6 +606,9 @@ class Node:
         # Get current vector clock as snapshot
         vc_snapshot = self.vc.get_clock()
         
+        chat_text = payload.get("text", "")
+        self.logger.info(f"ORDERING MESSAGE: seq={seq}, mid={msg_id}, from={sender_id}, text='{chat_text}'")
+        
         # Create ORDERED message with vector clock and original sender ID
         ordered_payload = {
             "seq": seq,
@@ -597,13 +624,14 @@ class Node:
         # Use dedicated multicast sender socket (not unicast socket)
         try:
             send_json(self.multicast_sender_sock, (MCAST_GRP, MCAST_PORT), ordered_msg)
+            self.logger.debug(f"BROADCAST ORDERED: seq={seq}, mid={msg_id}, to {len(self.members)} members")
             self._system_log(f"Multicast ORDERED message seq={seq} to group")
         except Exception as e:
+            self.logger.error(f"Failed to multicast ORDERED message: {e}")
             self._system_log(f"Failed to multicast ORDERED message: {e}")
         
         # Leader delivers its own message locally (don't send to self via network)
         # This avoids UDP loopback issues and ensures synchronous delivery
-        chat_text = payload.get("text", "")
         # Use the original sender_id for the ChatMessage
         chat_msg = ChatMessage(sender_id=sender_id, text=chat_text, sequence_number=seq, vector_clock=vc_snapshot)
         
@@ -624,6 +652,7 @@ class Node:
                 pending_set.add(member_id)
         
         self.pending_acks[(seq, msg_id)] = pending_set
+        self.logger.info(f"ORDERED seq={seq}, mid={msg_id}, from={sender_id}: '{chat_text}', awaiting ACKs from {len(pending_set)} followers")
         self._system_log(f"Ordered message seq={seq}, mid={msg_id}, from node {sender_id}, waiting for ACKs from {len(pending_set)} peers")
     
     def _retransmit_loop(self):
@@ -873,6 +902,9 @@ class Node:
                 # Extract follower's last delivered sequence number for sequence sync
                 follower_max_seq = payload.get("max_seq_delivered", 0)
                 
+                # Log the heartbeat reception
+                self.logger.debug(f"RECEIVED HEARTBEAT from follower {from_id} (max_seq_delivered={follower_max_seq})")
+                
                 # Track the highest sequence number any follower has delivered
                 # New leader uses this to know where to start assigning sequences
                 if not hasattr(self, 'max_seq_seen_from_followers'):
@@ -882,8 +914,12 @@ class Node:
                 
                 # If our next_seq_to_assign is behind what followers have seen, advance it
                 if self.next_seq_to_assign <= self.max_seq_seen_from_followers:
+                    self.logger.info(f"Follower {from_id} reported seq={follower_max_seq}, advancing next_seq_to_assign from {self.next_seq_to_assign} to {self.max_seq_seen_from_followers + 1}")
                     self._system_log(f"Follower {from_id} reported seq={follower_max_seq}, advancing next_seq_to_assign from {self.next_seq_to_assign} to {self.max_seq_seen_from_followers + 1}")
                     self.next_seq_to_assign = self.max_seq_seen_from_followers + 1
+            else:
+                # Follower received heartbeat confirmation from leader
+                self.logger.debug(f"RECEIVED HEARTBEAT ACK from leader {from_id}")
 
         
         elif msg_type == MEMBERSHIP:
@@ -903,9 +939,19 @@ class Node:
                 
                 members_changed = old_members != new_members
                 if members_changed:
+                    self.logger.info(f"MEMBERSHIP CHANGED - old: {old_members}, new: {new_members}")
                     self._system_log(f"Updated membership - new members: {new_members}")
+                else:
+                    self.logger.debug(f"RECEIVED MEMBERSHIP UPDATE (no change): term={msg_term}, members={new_members}")
                 
                 self.term = msg_term
+                # Extract leader_id from membership message
+                leader_from_msg = payload.get("leader_id", from_id)
+                if leader_from_msg != self.leader_id:
+                    self.logger.info(f"Updated leader_id: {self.leader_id} -> {leader_from_msg}")
+                    self.leader_id = leader_from_msg
+                else:
+                    self.leader_id = leader_from_msg
                 # Normalize all addresses in members dict from list to tuple (JSON converts tuples to lists)
                 raw_members = payload.get("members", {})
                 self.members = {}
@@ -939,29 +985,44 @@ class Node:
                         # New nodes should start from here
                         self.next_seq_to_deliver = leader_next_seq
                         self.holdback = {}  # Clear any out-of-order messages from before sync
+                        self.logger.info(f"MEMBERSHIP SYNC: Synced sequence number - next_seq_to_deliver={self.next_seq_to_deliver}")
                         self._system_log(f"Synced sequence number with leader: next_seq_to_deliver={self.next_seq_to_deliver}")
                 
+                # Log membership with role information
+                members_with_roles = []
+                for member_id in sorted(self.members.keys(), key=lambda x: int(x)):
+                    role = "LEADER" if int(member_id) == self.leader_id else "FOLLOWER"
+                    members_with_roles.append(f"Node {member_id}({role})")
+                members_str = ", ".join(members_with_roles)
+                
+                self.logger.info(f"UPDATED MEMBERSHIP from leader {from_id} (term={msg_term}): [{members_str}]")
                 self._system_log(f"Updated membership from leader (term={msg_term}): members={list(self.members.keys())}")
+
         
         elif msg_type == ELECTION:
             # Received election from lower ID peer
             sender_id = from_id
+            self.logger.debug(f"RECEIVED ELECTION from node {sender_id}")
             if sender_id < self.node_id:
                 # Reply with OK
                 ok_msg = make_msg(ELECTION_OK, self.node_id, self.term)
                 try:
                     send_json(self.unicast_sock, addr, ok_msg)
+                    self.logger.debug(f"Sent ELECTION_OK to node {sender_id}")
                     self._system_log(f"Received ELECTION from node {sender_id}, sent OK")
                 except Exception as e:
+                    self.logger.error(f"Failed to send OK to {sender_id}: {e}")
                     self._system_log(f"Failed to send OK to {sender_id}: {e}")
                 
                 # Start own election if not already in progress
                 if not self.election_in_progress:
+                    self.logger.info(f"Starting own election in response to election from {sender_id}")
                     self.start_election()
         
         elif msg_type == ELECTION_OK:
             # Received OK from higher ID peer
             # Mark that we received an OK so election timeout won't make us leader
+            self.logger.info(f"RECEIVED ELECTION_OK from node {from_id}")
             self.got_ok = True
             self.awaiting_coordinator = True
             self._system_log(f"Received OK from node {from_id}, awaiting coordinator")
@@ -977,6 +1038,7 @@ class Node:
             coordinator_id = payload.get("leader_id", from_id)
             coordinator_term = msg.get("term", 0)
             
+            self.logger.info(f"RECEIVED COORDINATOR: from={from_id}, coordinator={coordinator_id}, term={coordinator_term}")
             print(f"Node {self.node_id}: Received COORDINATOR from {from_id} at {addr}, coordinator_id={coordinator_id}, term={coordinator_term}")
 
             # Normalize coordinator_id to integer for comparison
@@ -992,6 +1054,7 @@ class Node:
             # to ensure the highest available node becomes leader.
             if isinstance(coord_id_int, int) and coord_id_int < self.node_id:
                 # Reject coordinator from lower-ID node; start election to assert higher-id leadership
+                self.logger.warning(f"REJECTING invalid COORDINATOR from lower-id {coordinator_id} - starting own election")
                 print(f"Node {self.node_id}: Rejecting COORDINATOR from lower-id {coordinator_id}, starting election")
                 self._system_log(f"Ignoring COORDINATOR from lower-id {coordinator_id}; starting election")
                 if not self.election_in_progress:
@@ -1009,16 +1072,19 @@ class Node:
                 leader_key = str(coordinator_id)
                 if leader_key not in self.members:
                     self.members[leader_key] = addr
+                    self.logger.info(f"Added leader {coordinator_id} to members dict")
                     print(f"Node {self.node_id}: Added new leader {coordinator_id} to members dict with address {addr}")
                     self._system_log(f"Added new leader {coordinator_id} to members dict with address {addr}")
 
                 # Update leader address from members dict or from COORDINATOR sender
                 if str(coordinator_id) in self.members:
                     self.leader_addr = self.members[str(coordinator_id)]
+                    self.logger.debug(f"Updated leader_addr from members dict: {self.leader_addr}")
                     print(f"Node {self.node_id}: Updated leader_addr to {self.leader_addr} (from members dict)")
                     self._system_log(f"Updated leader_addr from members dict: {self.leader_addr}")
                 else:
                     self.leader_addr = addr
+                    self.logger.debug(f"Updated leader_addr from COORDINATOR sender: {addr}")
                     print(f"Node {self.node_id}: Updated leader_addr to {addr} (from COORDINATOR sender)")
                     self._system_log(f"Updated leader_addr from COORDINATOR sender: {self.leader_addr}")
                 
@@ -1031,7 +1097,10 @@ class Node:
                 
                 # Reset leader election timestamp if we become leader
                 if self.is_leader:
+                    self.logger.info(f"I AM NOW LEADER (term={coordinator_term})")
                     self.leader_election_ts = time.time()
+                else:
+                    self.logger.info(f"NEW LEADER: Node {coordinator_id} (term={coordinator_term})")
                 # Followers do NOT reset sequence numbers - they continue expecting the next seq
                 # (sequence numbers are globally monotonic across leader transitions)
                 
@@ -1049,10 +1118,12 @@ class Node:
                 msg_id = payload.get("mid")
                 text = payload.get("text", "")
                 # Pass the original sender's ID (from_id) to preserve it in ordered messages
+                self.logger.info(f"RECEIVED PROPOSE from node {from_id}: '{text}' (mid={msg_id})")
                 self._system_log(f"Leader received PROPOSE from node {from_id}: '{text}'")
                 self._order_message(msg_id, payload, sender_id=from_id)
             else:
                 # Non-leader ignores PROPOSE
+                self.logger.debug(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 self._system_log(f"Ignoring PROPOSE (not leader): from node {from_id}")
                 pass
         
@@ -1125,10 +1196,14 @@ class Node:
                 if key in self.pending_acks:
                     peer_id = str(from_id) if isinstance(from_id, int) else from_id
                     self.pending_acks[key].discard(peer_id)
+                    remaining = len(self.pending_acks[key])
+                    
+                    self.logger.debug(f"RECEIVED DELIVER_ACK from node {from_id}: seq={seq}, remaining_acks={remaining}")
                     
                     # If all peers have ACKed, remove entry
                     if not self.pending_acks[key]:
                         del self.pending_acks[key]
                         if key in self.ack_retry_count:
                             del self.ack_retry_count[key]
+                        self.logger.info(f"ALL ACKS RECEIVED: seq={seq}, mid={msg_id}")
                         self._system_log(f"All peers ACKed (seq={seq}, mid={msg_id})")
