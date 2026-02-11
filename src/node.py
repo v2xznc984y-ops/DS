@@ -439,30 +439,31 @@ class Node:
         self.last_election_start_ts = time.time()
         
         print(f"Node {self.node_id}: Starting election (term={self.term})")
-        self.logger.warning(f"STARTED ELECTION: term={self.term}, election_id={election_id}")
+        self.logger.warning(f"STARTED ELECTION: initiator={self.node_id}, term={self.term}, election_id={election_id}")
         self._system_log(f"Starting election (term={self.term})")
         
         # Get IDs of peers with higher node_id
         higher = self.higher_ids()
+        self.logger.info(f"ELECTION CALCULATION: node_id={self.node_id}, all_members={sorted(self.members.keys())}, higher_ids={higher}")
         
         if not higher:
             # No higher IDs - self becomes leader
-            self.logger.info(f"No higher node IDs found, becoming leader")
+            self.logger.warning(f"ELECTION RESULT: node_id={self.node_id} is HIGHEST - becoming leader immediately (no higher nodes)")
             self._become_leader()
         else:
             # Send ELECTION to all higher IDs
             msg = make_msg(ELECTION, self.node_id, self.term)
-            self.logger.debug(f"Sending ELECTION to {len(higher)} higher peers: {higher}")
+            self.logger.warning(f"ELECTION SENT: from_node={self.node_id}, to_higher_nodes={higher}, count={len(higher)}")
             for peer_id in higher:
                 peer_key = str(peer_id)
                 if peer_key in self.members:
                     peer_addr = self.members[peer_key]
                     try:
                         send_json(self.unicast_sock, peer_addr, msg)
-                        self.logger.debug(f"Sent ELECTION message to peer {peer_id} at {peer_addr}")
+                        self.logger.info(f"ELECTION MESSAGE SENT: from={self.node_id}, to={peer_id}, addr={peer_addr}, term={self.term}")
                         self._system_log(f"Sent ELECTION to higher peer {peer_id}")
                     except Exception as e:
-                        self.logger.error(f"Failed to send ELECTION to {peer_id}: {e}")
+                        self.logger.error(f"ELECTION MESSAGE FAILED: from={self.node_id}, to={peer_id}, error={e}")
                         self._system_log(f"Failed to send ELECTION to {peer_id}: {e}")
             
             # Wait for OK response
@@ -483,7 +484,7 @@ class Node:
                 if not self.got_ok:
                     # No OK received - become leader
                     print(f"Node {self.node_id}: No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
-                    self.logger.warning(f"ELECTION TIMEOUT: no OK received in {ELECTION_TIMEOUT_SEC}s, becoming leader")
+                    self.logger.warning(f"ELECTION TIMEOUT: initiator={self.node_id}, no_ok_received=true, timeout_sec={ELECTION_TIMEOUT_SEC}, result=BECOME_LEADER")
                     self._system_log(f"No OK received within {ELECTION_TIMEOUT_SEC}s, becoming leader")
                     self._become_leader()
             
@@ -513,6 +514,7 @@ class Node:
                 
                 if now - last_seen_time > FAILURE_TIMEOUT_SEC:
                     print(f"Node {self.node_id}: Leader {self.leader_id} appears to be dead (no message for {FAILURE_TIMEOUT_SEC}s)")
+                    self.logger.warning(f"ELECTION INITIATED BY NODE {self.node_id}: Reason=LEADER_TIMEOUT, leader_id={self.leader_id}, last_seen_age={(now - last_seen_time):.2f}s")
                     self._system_log(f"Leader {self.leader_id} appears dead (no message for {FAILURE_TIMEOUT_SEC}s)")
                     self.start_election()
                     break  # Stop checking once we start election
@@ -1002,27 +1004,29 @@ class Node:
         elif msg_type == ELECTION:
             # Received election from lower ID peer
             sender_id = from_id
-            self.logger.debug(f"RECEIVED ELECTION from node {sender_id}")
+            self.logger.warning(f"ELECTION RECEIVED: receiver={self.node_id}, from={sender_id}, addr={addr}, term={msg.get('term', 0)}, is_lower={sender_id < self.node_id}")
             if sender_id < self.node_id:
                 # Reply with OK
                 ok_msg = make_msg(ELECTION_OK, self.node_id, self.term)
                 try:
                     send_json(self.unicast_sock, addr, ok_msg)
-                    self.logger.debug(f"Sent ELECTION_OK to node {sender_id}")
+                    self.logger.warning(f"ELECTION_OK SENT: from={self.node_id}, to={sender_id}, reason=higher_id, term={self.term}")
                     self._system_log(f"Received ELECTION from node {sender_id}, sent OK")
                 except Exception as e:
-                    self.logger.error(f"Failed to send OK to {sender_id}: {e}")
+                    self.logger.error(f"ELECTION_OK FAILED: from={self.node_id}, to={sender_id}, error={e}")
                     self._system_log(f"Failed to send OK to {sender_id}: {e}")
                 
                 # Start own election if not already in progress
                 if not self.election_in_progress:
-                    self.logger.info(f"Starting own election in response to election from {sender_id}")
+                    self.logger.warning(f"CASCADING_ELECTION: node={self.node_id}, triggered_by={sender_id}, reason=received_lower_election")
                     self.start_election()
+                else:
+                    self.logger.debug(f"CASCADING_ELECTION_SKIPPED: node={self.node_id}, election_already_in_progress=true")
         
         elif msg_type == ELECTION_OK:
             # Received OK from higher ID peer
             # Mark that we received an OK so election timeout won't make us leader
-            self.logger.info(f"RECEIVED ELECTION_OK from node {from_id}")
+            self.logger.warning(f"ELECTION_OK RECEIVED: receiver={self.node_id}, from={from_id}, addr={addr}, got_ok_flag=true, awaiting_coordinator=true")
             self.got_ok = True
             self.awaiting_coordinator = True
             self._system_log(f"Received OK from node {from_id}, awaiting coordinator")
@@ -1031,6 +1035,7 @@ class Node:
             # (the higher node is running, so it will elect)
             if hasattr(self, '_election_start_time'):
                 self._election_start_time = time.time()
+            self.logger.info(f"ELECTION_DEFERRAL: node={self.node_id} deferring to node {from_id}, will wait for coordinator")
         
         elif msg_type == COORDINATOR:
             # Received coordinator announcement
@@ -1097,9 +1102,11 @@ class Node:
                 
                 # Reset leader election timestamp if we become leader
                 if self.is_leader:
+                    self.logger.warning(f"ELECTION COMPLETED: node={self.node_id}, result=ELECTED_LEADER, coordinator_id={coordinator_id}, term={coordinator_term}")
                     self.logger.info(f"I AM NOW LEADER (term={coordinator_term})")
                     self.leader_election_ts = time.time()
                 else:
+                    self.logger.warning(f"ELECTION COMPLETED: node={self.node_id}, result=ACCEPTED_LEADER, elected_leader={coordinator_id}, term={coordinator_term}")
                     self.logger.info(f"NEW LEADER: Node {coordinator_id} (term={coordinator_term})")
                 # Followers do NOT reset sequence numbers - they continue expecting the next seq
                 # (sequence numbers are globally monotonic across leader transitions)
