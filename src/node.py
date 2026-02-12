@@ -4,13 +4,12 @@ import sys
 import os
 import socket
 import logging
-import atexit
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import BASE_PORT, MCAST_GRP, MCAST_PORT, DISCOVERY_RETRIES, DISCOVERY_TIMEOUT_SEC, HEARTBEAT_INTERVAL_SEC, FAILURE_TIMEOUT_SEC, ELECTION_TIMEOUT_SEC, ACK_TIMEOUT_SEC, ACK_RETRIES
-from src.protocol import make_msg, msg_id, DISCOVERY, DISCOVERY_REPLY, DUPLICATE_REJECTED, HEARTBEAT, MEMBERSHIP, ELECTION, ELECTION_OK, COORDINATOR, PROPOSE, ORDERED, DELIVER_ACK
+from src.protocol import make_msg, msg_id, DISCOVERY, DISCOVERY_REPLY, HEARTBEAT, MEMBERSHIP, ELECTION, ELECTION_OK, COORDINATOR, PROPOSE, ORDERED, DELIVER_ACK
 from src.net import make_unicast_socket, make_multicast_listener_socket, make_multicast_sender_socket, recv_json, send_json
 from src.ui import ChatUI
 from src.vector_clock import VectorClock
@@ -872,42 +871,21 @@ class Node:
         if msg_type == DISCOVERY:
             # A node is trying to discover the cluster
             if self.is_leader:
-                # Check if this node ID is already in the cluster
+                # Add new member to cluster; normalize member key to string
                 member_key = str(from_id)
-                if member_key in self.members:
-                    # Duplicate node ID detected - reject silently (no console spam)
-                    self.logger.debug(f"Duplicate node {from_id} discovery attempt from {addr}")
-                    
-                    # Send explicit rejection message
+                if member_key not in self.members:
                     unicast_port = msg.get("payload", {}).get("unicast_port")
                     if unicast_port:
-                        rejection_payload = {
-                            "reason": "DUPLICATE_NODE_ID",
-                            "existing_node_id": from_id,
-                            "message": f"Node {from_id} already exists in cluster"
-                        }
-                        rejection_msg = make_msg(DUPLICATE_REJECTED, self.node_id, self.term, rejection_payload)
-                        reply_addr = (addr[0], unicast_port)
-                        try:
-                            send_json(self.unicast_sock, reply_addr, rejection_msg)
-                            self.logger.debug(f"Sent DUPLICATE_REJECTED to {from_id}")
-                        except Exception as e:
-                            self.logger.debug(f"Failed to send DUPLICATE_REJECTED to {from_id}: {e}")
-                    return  # Don't send DISCOVERY_REPLY
-                
-                # New node - add to cluster
-                unicast_port = msg.get("payload", {}).get("unicast_port")
-                if unicast_port:
-                    member_addr = (addr[0], unicast_port)
-                    self.members[member_key] = member_addr
-                    self.last_seen[member_key] = time.time()
-                    self._display_members()
-                    
-                    # Update vector clock to include new member WITHOUT losing current state
-                    # Just add the new member to the existing clock, don't reinitialize
-                    new_member_key = str(from_id)
-                    if new_member_key not in self.vc.clock:
-                        self.vc.clock[new_member_key] = 0
+                        member_addr = (addr[0], unicast_port)
+                        self.members[member_key] = member_addr
+                        self.last_seen[member_key] = time.time()
+                        self._display_members()
+                        
+                        # Update vector clock to include new member WITHOUT losing current state
+                        # Just add the new member to the existing clock, don't reinitialize
+                        new_member_key = str(from_id)
+                        if new_member_key not in self.vc.clock:
+                            self.vc.clock[new_member_key] = 0
                 
                 # Reply with cluster info
                 payload = {
@@ -929,23 +907,6 @@ class Node:
             # Store reply for startup_discovery to process
             self.discovery_reply = (msg, addr)
             self._system_log(f"Listener got DISCOVERY_REPLY from {addr}")
-        
-        elif msg_type == DUPLICATE_REJECTED:
-            # Received rejection - this node's ID is already in the cluster
-            payload = msg.get("payload", {})
-            reason = payload.get("reason", "UNKNOWN")
-            message = payload.get("message", "")
-            print(f"\n{'='*70}")
-            print(f"[DUPLICATE NODE REJECTED]")
-            print(f"Cannot join cluster - {message}")
-            print(f"Reason: {reason}")
-            print(f"Node {self.node_id} with same ID already exists in the cluster.")
-            print(f"Please use a different node ID.")
-            print(f"{'='*70}\n")
-            self.logger.warning(f"DUPLICATE NODE REJECTION RECEIVED: reason={reason}, message={message}")
-            self._system_log(f"Node was rejected due to: {message}")
-            # Force terminate the process (sys.exit() doesn't work from listener threads)
-            os._exit(1)
         
         elif msg_type == HEARTBEAT:
             # Received heartbeat from a peer
@@ -1057,16 +1018,6 @@ class Node:
         elif msg_type == ELECTION:
             # Received election from lower ID peer
             sender_id = from_id
-            
-            # === Duplicate Node Detection ===
-            # Reject ELECTION from nodes not in our cluster
-            sender_key = str(sender_id)
-            if sender_key not in self.members:
-                self.logger.warning(f"REJECTING ELECTION from UNKNOWN/DUPLICATE node {sender_id} at {addr}")
-                print(f"Node {self.node_id}: Ignoring ELECTION from unknown/duplicate node {sender_id} at {addr}")
-                self._system_log(f"Ignored ELECTION from unknown node {sender_id}")
-                return
-            
             self.logger.warning(f"ELECTION RECEIVED: receiver={self.node_id}, from={sender_id}, addr={addr}, term={msg.get('term', 0)}, is_lower={sender_id < self.node_id}")
             if sender_id < self.node_id:
                 # Reply with OK
@@ -1108,23 +1059,6 @@ class Node:
             
             self.logger.info(f"RECEIVED COORDINATOR: from={from_id}, coordinator={coordinator_id}, term={coordinator_term}")
             print(f"Node {self.node_id}: Received COORDINATOR from {from_id} at {addr}, coordinator_id={coordinator_id}, term={coordinator_term}")
-
-            # === Duplicate Node Detection ===
-            # Check if coordinator_id is already in cluster with a DIFFERENT address
-            # This indicates a duplicate node trying to claim leadership
-            coordinator_key = str(coordinator_id)
-            if coordinator_key in self.members:
-                known_addr = self.members[coordinator_key]
-                # Normalize addresses for comparison (handle tuple vs list)
-                known_addr_tuple = tuple(known_addr) if isinstance(known_addr, list) else known_addr
-                incoming_addr_tuple = tuple(addr) if isinstance(addr, list) else addr
-                
-                if known_addr_tuple != incoming_addr_tuple:
-                    # Different address for same node ID - this is a duplicate/rogue node
-                    self.logger.warning(f"DUPLICATE NODE DETECTED: coordinator_id={coordinator_id} from {incoming_addr_tuple}, but known_addr={known_addr_tuple}")
-                    print(f"Node {self.node_id}: REJECTING COORDINATOR from DUPLICATE/ROGUE node {coordinator_id} at {addr} (known addr: {known_addr})")
-                    self._system_log(f"Rejected COORDINATOR from duplicate node {coordinator_id} at wrong address {addr}")
-                    return  # Ignore this COORDINATOR completely
 
             # Normalize coordinator_id to integer for comparison
             try:
@@ -1200,16 +1134,6 @@ class Node:
         
         elif msg_type == PROPOSE:
             # Received message proposal from peer (leader only)
-            
-            # === Duplicate Node Detection ===
-            # Reject PROPOSE from nodes not in our cluster
-            sender_key = str(from_id)
-            if sender_key not in self.members:
-                self.logger.warning(f"REJECTING PROPOSE from UNKNOWN/DUPLICATE node {from_id} at {addr}")
-                print(f"Node {self.node_id}: Ignoring PROPOSE from unknown/duplicate node {from_id} at {addr}")
-                self._system_log(f"Ignored PROPOSE from unknown node {from_id}")
-                return
-            
             if self.is_leader:
                 payload = msg.get("payload", {})
                 msg_id = payload.get("mid")
