@@ -87,6 +87,7 @@ class Node:
         self.next_seq_to_assign = 1  # Next sequence number to assign
         self.pending_acks = {}  # (seq, msg_id) -> set of peer_ids missing ACK
         self.ack_retry_count = {}  # (seq, msg_id) -> retry count
+        self.ordered_messages = {}  # (seq, msg_id) -> full ordered_payload for retransmission
         
         # Reliable PROPOSE sending - track messages until they're ordered
         # Handles case where leader crashes before ordering a PROPOSE
@@ -654,6 +655,10 @@ class Node:
                 pending_set.add(member_id)
         
         self.pending_acks[(seq, msg_id)] = pending_set
+        
+        # Store full ordered payload for retransmission
+        self.ordered_messages[(seq, msg_id)] = ordered_payload
+        
         self.logger.info(f"ORDERED seq={seq}, mid={msg_id}, from={sender_id}: '{chat_text}', awaiting ACKs from {len(pending_set)} followers")
         self._system_log(f"Ordered message seq={seq}, mid={msg_id}, from node {sender_id}, waiting for ACKs from {len(pending_set)} peers")
     
@@ -691,19 +696,26 @@ class Node:
                     # Broadcast updated membership
                     self._broadcast_membership()
                     
-                    # Clean up retry count
+                    # Clean up retry count and stored message
                     del self.ack_retry_count[(seq, msg_id)]
+                    if (seq, msg_id) in self.ordered_messages:
+                        del self.ordered_messages[(seq, msg_id)]
                     continue
                 
                 # Resend ORDERED to peers still missing ACK
                 self._system_log(f"Retransmitting (seq={seq}, mid={msg_id}) to {len(missing_peers)} peers (retry #{self.ack_retry_count[(seq, msg_id)]})")
                 
-                # Reconstruct and resend ORDERED message to missing peers
-                ordered_payload = {
-                    "seq": seq,
-                    "mid": msg_id,
-                    "payload": {}  # Don't need original payload for retransmit
-                }
+                # Reconstruct and resend ORDERED message to missing peers with FULL payload
+                if (seq, msg_id) in self.ordered_messages:
+                    ordered_payload = self.ordered_messages[(seq, msg_id)]
+                else:
+                    # Fallback if message not in cache (shouldn't happen)
+                    ordered_payload = {
+                        "seq": seq,
+                        "mid": msg_id,
+                        "payload": {}
+                    }
+                
                 ordered_msg = make_msg(ORDERED, self.node_id, self.term, ordered_payload)
                 
                 for peer_id in missing_peers:
@@ -816,6 +828,7 @@ class Node:
         # Clear message state from old leader(s), but keep sequence counter
         self.pending_acks = {}  # Clear pending ACKs from old leader's messages
         self.ack_retry_count = {}  # Clear retry counts
+        self.ordered_messages = {}  # Clear stored messages from old leader
         self.message_history = []  # Clear message history
         
         # Reinitialize vector clock with current members
@@ -1226,5 +1239,7 @@ class Node:
                         del self.pending_acks[key]
                         if key in self.ack_retry_count:
                             del self.ack_retry_count[key]
+                        if key in self.ordered_messages:
+                            del self.ordered_messages[key]
                         self.logger.info(f"ALL ACKS RECEIVED: seq={seq}, mid={msg_id}")
                         self._system_log(f"All peers ACKed (seq={seq}, mid={msg_id})")

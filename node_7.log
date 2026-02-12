@@ -1,423 +1,284 @@
-2026-02-12 10:41:03 - Node 7 started
-2026-02-12 10:41:20 - Duplicate node 7 discovery attempt from ('192.168.0.103', 54517)
-2026-02-12 10:41:20 - Sent DUPLICATE_REJECTED to 7
-2026-02-12 10:41:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=1
-2026-02-12 10:41:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=1
-2026-02-12 10:41:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=1
-2026-02-12 10:41:26 - DISPLAY MEMBERS: 2 nodes: Node 7 (LEADER), Node 69 (FOLLOWER)
-2026-02-12 10:41:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:27 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:29 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:30 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:31 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:32 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:33 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:34 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:35 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:36 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:37 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:38 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:39 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:40 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:41 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:42 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:43 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:44 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:45 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:46 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:47 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:48 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:49 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:50 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:41:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:41:51 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:51 - ORDERING MESSAGE: seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43, from=7, text='hiii'
-2026-02-12 10:41:51 - BROADCAST ORDERED: seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43, to 2 members
-2026-02-12 10:41:51 - Received ORDERED seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43, from=7, text='hiii'
-2026-02-12 10:41:51 - ORDERED seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43, from=7: 'hiii', awaiting ACKs from 1 followers
-2026-02-12 10:41:51 - STORED in holdback [seq=1] 7: hiii (next_seq_to_deliver=2)
-2026-02-12 10:41:51 - Received ORDERED seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43, from=7, text='hiii'
-2026-02-12 10:41:51 - STORED in holdback [seq=1] 7: hiii (next_seq_to_deliver=2)
-2026-02-12 10:41:52 - RECEIVED DELIVER_ACK from node 69: seq=1, remaining_acks=0
-2026-02-12 10:41:52 - ALL ACKS RECEIVED: seq=1, mid=e69e73a9-143f-4d90-90ec-b414c93cbc43
-2026-02-12 10:41:52 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:41:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:41:53 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:54 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:41:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:41:55 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:41:57 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:58 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:41:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:41:59 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:41:59 - ORDERING MESSAGE: seq=2, mid=604f8cf6-f3d2-44c8-bbd6-a21a59f20cfc, from=7, text='uuu'
-2026-02-12 10:41:59 - BROADCAST ORDERED: seq=2, mid=604f8cf6-f3d2-44c8-bbd6-a21a59f20cfc, to 2 members
-2026-02-12 10:41:59 - Received ORDERED seq=2, mid=604f8cf6-f3d2-44c8-bbd6-a21a59f20cfc, from=7, text='uuu'
-2026-02-12 10:41:59 - ORDERED seq=2, mid=604f8cf6-f3d2-44c8-bbd6-a21a59f20cfc, from=7: 'uuu', awaiting ACKs from 1 followers
-2026-02-12 10:41:59 - STORED in holdback [seq=2] 7: uuu (next_seq_to_deliver=3)
-2026-02-12 10:42:00 - RECEIVED DELIVER_ACK from node 69: seq=2, remaining_acks=0
-2026-02-12 10:42:00 - ALL ACKS RECEIVED: seq=2, mid=604f8cf6-f3d2-44c8-bbd6-a21a59f20cfc
-2026-02-12 10:42:00 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=2)
-2026-02-12 10:42:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=3
-2026-02-12 10:42:01 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:02 - ORDERING MESSAGE: seq=3, mid=78e922f6-da04-48b5-ad8a-896f31b5d6fb, from=7, text='898008'
-2026-02-12 10:42:02 - BROADCAST ORDERED: seq=3, mid=78e922f6-da04-48b5-ad8a-896f31b5d6fb, to 2 members
-2026-02-12 10:42:02 - Received ORDERED seq=3, mid=78e922f6-da04-48b5-ad8a-896f31b5d6fb, from=7, text='898008'
-2026-02-12 10:42:02 - ORDERED seq=3, mid=78e922f6-da04-48b5-ad8a-896f31b5d6fb, from=7: '898008', awaiting ACKs from 1 followers
-2026-02-12 10:42:02 - STORED in holdback [seq=3] 7: 898008 (next_seq_to_deliver=4)
-2026-02-12 10:42:02 - RECEIVED DELIVER_ACK from node 69: seq=3, remaining_acks=0
-2026-02-12 10:42:02 - ALL ACKS RECEIVED: seq=3, mid=78e922f6-da04-48b5-ad8a-896f31b5d6fb
-2026-02-12 10:42:02 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=3)
-2026-02-12 10:42:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=4
-2026-02-12 10:42:03 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:04 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=3)
-2026-02-12 10:42:04 - ORDERING MESSAGE: seq=4, mid=e9a6622e-4b8f-485b-bc3b-af7f806ccd73, from=7, text='9008088088'
-2026-02-12 10:42:04 - BROADCAST ORDERED: seq=4, mid=e9a6622e-4b8f-485b-bc3b-af7f806ccd73, to 2 members
-2026-02-12 10:42:04 - Received ORDERED seq=4, mid=e9a6622e-4b8f-485b-bc3b-af7f806ccd73, from=7, text='9008088088'
-2026-02-12 10:42:04 - ORDERED seq=4, mid=e9a6622e-4b8f-485b-bc3b-af7f806ccd73, from=7: '9008088088', awaiting ACKs from 1 followers
-2026-02-12 10:42:04 - STORED in holdback [seq=4] 7: 9008088088 (next_seq_to_deliver=5)
-2026-02-12 10:42:04 - RECEIVED DELIVER_ACK from node 69: seq=4, remaining_acks=0
-2026-02-12 10:42:04 - ALL ACKS RECEIVED: seq=4, mid=e9a6622e-4b8f-485b-bc3b-af7f806ccd73
-2026-02-12 10:42:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=5
-2026-02-12 10:42:05 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:06 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=4)
-2026-02-12 10:42:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=5
-2026-02-12 10:42:07 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:08 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=4)
-2026-02-12 10:42:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=5
-2026-02-12 10:42:09 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:09 - ORDERING MESSAGE: seq=5, mid=c2f94afc-3516-4efb-82fd-4318b1e67767, from=7, text='799799879'
-2026-02-12 10:42:09 - BROADCAST ORDERED: seq=5, mid=c2f94afc-3516-4efb-82fd-4318b1e67767, to 2 members
-2026-02-12 10:42:09 - Received ORDERED seq=5, mid=c2f94afc-3516-4efb-82fd-4318b1e67767, from=7, text='799799879'
-2026-02-12 10:42:09 - ORDERED seq=5, mid=c2f94afc-3516-4efb-82fd-4318b1e67767, from=7: '799799879', awaiting ACKs from 1 followers
-2026-02-12 10:42:09 - STORED in holdback [seq=5] 7: 799799879 (next_seq_to_deliver=6)
-2026-02-12 10:42:09 - RECEIVED DELIVER_ACK from node 69: seq=5, remaining_acks=0
-2026-02-12 10:42:09 - ALL ACKS RECEIVED: seq=5, mid=c2f94afc-3516-4efb-82fd-4318b1e67767
-2026-02-12 10:42:10 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=5)
-2026-02-12 10:42:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=6
-2026-02-12 10:42:11 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:12 - ORDERING MESSAGE: seq=6, mid=daf86399-94b0-4cb4-9f56-3f2c340a39f8, from=7, text='88989898889'
-2026-02-12 10:42:12 - BROADCAST ORDERED: seq=6, mid=daf86399-94b0-4cb4-9f56-3f2c340a39f8, to 2 members
-2026-02-12 10:42:12 - Received ORDERED seq=6, mid=daf86399-94b0-4cb4-9f56-3f2c340a39f8, from=7, text='88989898889'
-2026-02-12 10:42:12 - ORDERED seq=6, mid=daf86399-94b0-4cb4-9f56-3f2c340a39f8, from=7: '88989898889', awaiting ACKs from 1 followers
-2026-02-12 10:42:12 - STORED in holdback [seq=6] 7: 88989898889 (next_seq_to_deliver=7)
-2026-02-12 10:42:12 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=5)
-2026-02-12 10:42:12 - RECEIVED DELIVER_ACK from node 69: seq=6, remaining_acks=0
-2026-02-12 10:42:12 - ALL ACKS RECEIVED: seq=6, mid=daf86399-94b0-4cb4-9f56-3f2c340a39f8
-2026-02-12 10:42:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=7
-2026-02-12 10:42:13 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:14 - ORDERING MESSAGE: seq=7, mid=07cef546-e214-4a7d-8f02-49c0aa46d998, from=7, text='999'
-2026-02-12 10:42:14 - BROADCAST ORDERED: seq=7, mid=07cef546-e214-4a7d-8f02-49c0aa46d998, to 2 members
-2026-02-12 10:42:14 - Received ORDERED seq=7, mid=07cef546-e214-4a7d-8f02-49c0aa46d998, from=7, text='999'
-2026-02-12 10:42:14 - ORDERED seq=7, mid=07cef546-e214-4a7d-8f02-49c0aa46d998, from=7: '999', awaiting ACKs from 1 followers
-2026-02-12 10:42:14 - STORED in holdback [seq=7] 7: 999 (next_seq_to_deliver=8)
-2026-02-12 10:42:14 - RECEIVED DELIVER_ACK from node 69: seq=7, remaining_acks=0
-2026-02-12 10:42:14 - ALL ACKS RECEIVED: seq=7, mid=07cef546-e214-4a7d-8f02-49c0aa46d998
-2026-02-12 10:42:14 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:15 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:16 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:17 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:18 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:19 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:20 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:21 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:22 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:23 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:24 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:25 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:26 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:27 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:28 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:29 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:30 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:31 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:32 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:33 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:35 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:35 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:36 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:37 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:39 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:39 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:40 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:41 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:43 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:43 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:44 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:45 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:47 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:47 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:49 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:49 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:51 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:51 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:53 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:53 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:54 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:55 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:56 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:57 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:42:58 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:42:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:42:59 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:01 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:01 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:03 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:03 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:05 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:05 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:07 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:07 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:09 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:09 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:11 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:11 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:13 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:13 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:15 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:15 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:17 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:17 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:19 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:19 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:21 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:21 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:23 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:23 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:25 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:25 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:27 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:27 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:29 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:29 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:31 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:31 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:33 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:33 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:35 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:35 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:37 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:37 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:39 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:39 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:41 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:41 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:43 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:43 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:45 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:45 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:47 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:47 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:49 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=7)
-2026-02-12 10:43:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:49 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:51 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:53 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:43:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 69(FOLLOWER)], next_seq=8
-2026-02-12 10:43:55 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 65409)
-2026-02-12 10:44:52 - Node 7 started
-2026-02-12 10:45:10 - DISPLAY MEMBERS: 2 nodes: Node 7 (LEADER), Node 45 (FOLLOWER)
-2026-02-12 10:45:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=1
-2026-02-12 10:45:10 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=1
-2026-02-12 10:45:12 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:13 - DISPLAY MEMBERS: 3 nodes: Node 7 (LEADER), Node 45 (FOLLOWER), Node 69 (FOLLOWER)
-2026-02-12 10:45:14 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=0)
-2026-02-12 10:45:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:45:14 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:14 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:16 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=0)
-2026-02-12 10:45:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=1
-2026-02-12 10:45:16 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:16 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:17 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
-2026-02-12 10:45:18 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=0)
-2026-02-12 10:45:18 - RECEIVED PROPOSE from node 45: 'hello' (mid=1107eb7f-4d36-454b-af94-7114f4645e69)
-2026-02-12 10:45:18 - ORDERING MESSAGE: seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69, from=45, text='hello'
-2026-02-12 10:45:18 - BROADCAST ORDERED: seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69, to 3 members
-2026-02-12 10:45:18 - Received ORDERED seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69, from=7, text='hello'
-2026-02-12 10:45:18 - ORDERED seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69, from=45: 'hello', awaiting ACKs from 2 followers
-2026-02-12 10:45:18 - STORED in holdback [seq=1] 45: hello (next_seq_to_deliver=2)
-2026-02-12 10:45:18 - Received ORDERED seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69, from=7, text='hello'
-2026-02-12 10:45:18 - STORED in holdback [seq=1] 45: hello (next_seq_to_deliver=2)
-2026-02-12 10:45:18 - RECEIVED DELIVER_ACK from node 45: seq=1, remaining_acks=1
-2026-02-12 10:45:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:18 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:18 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:19 - RECEIVED DELIVER_ACK from node 69: seq=1, remaining_acks=0
-2026-02-12 10:45:19 - ALL ACKS RECEIVED: seq=1, mid=1107eb7f-4d36-454b-af94-7114f4645e69
-2026-02-12 10:45:19 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:20 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:20 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:20 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:21 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:22 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:22 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:22 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:23 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:24 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:24 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:24 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:25 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:26 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:26 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:26 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:27 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:28 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:28 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:28 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:29 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:30 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:30 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:30 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:31 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:32 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:32 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:32 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:33 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:34 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:34 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:34 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:35 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:36 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:36 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:36 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:37 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:38 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:38 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:38 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:39 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=1)
-2026-02-12 10:45:40 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:40 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:40 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:42 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:42 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:42 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:44 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:44 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:44 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:46 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER), Node 69(FOLLOWER)], next_seq=2
-2026-02-12 10:45:46 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:46 - Sent MEMBERSHIP to node 69 at ('192.168.0.104', 55714)
-2026-02-12 10:45:46 - Detected failure of node 69 (no heartbeat for 7.0s) - removing from cluster
-2026-02-12 10:45:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=2
-2026-02-12 10:45:46 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:48 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=2
-2026-02-12 10:45:48 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:50 - RECEIVED HEARTBEAT from follower 45 (max_seq_delivered=1)
-2026-02-12 10:45:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=2
-2026-02-12 10:45:50 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:52 - ORDERING MESSAGE: seq=2, mid=03a6a146-1867-4408-adf6-77d2431a3ea2, from=7, text='iiihihihihih'
-2026-02-12 10:45:52 - BROADCAST ORDERED: seq=2, mid=03a6a146-1867-4408-adf6-77d2431a3ea2, to 2 members
-2026-02-12 10:45:52 - Received ORDERED seq=2, mid=03a6a146-1867-4408-adf6-77d2431a3ea2, from=7, text='iiihihihihih'
-2026-02-12 10:45:52 - ORDERED seq=2, mid=03a6a146-1867-4408-adf6-77d2431a3ea2, from=7: 'iiihihihihih', awaiting ACKs from 1 followers
-2026-02-12 10:45:52 - STORED in holdback [seq=2] 7: iiihihihihih (next_seq_to_deliver=3)
-2026-02-12 10:45:52 - Received ORDERED seq=2, mid=03a6a146-1867-4408-adf6-77d2431a3ea2, from=7, text='iiihihihihih'
-2026-02-12 10:45:52 - STORED in holdback [seq=2] 7: iiihihihihih (next_seq_to_deliver=3)
-2026-02-12 10:45:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=3
-2026-02-12 10:45:52 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=3
-2026-02-12 10:45:54 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 45(FOLLOWER)], next_seq=3
-2026-02-12 10:45:56 - Sent MEMBERSHIP to node 45 at ('192.168.0.103', 51829)
-2026-02-12 10:45:56 - DISPLAY MEMBERS: 1 nodes: Node 7 (LEADER)
-2026-02-12 10:45:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=3
-2026-02-12 10:45:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=3
-2026-02-12 10:46:00 - ORDERING MESSAGE: seq=3, mid=87756cde-9aee-477a-b9cf-c9a5b49239ea, from=7, text='uuu'
-2026-02-12 10:46:00 - BROADCAST ORDERED: seq=3, mid=87756cde-9aee-477a-b9cf-c9a5b49239ea, to 1 members
-2026-02-12 10:46:00 - Received ORDERED seq=3, mid=87756cde-9aee-477a-b9cf-c9a5b49239ea, from=7, text='uuu'
-2026-02-12 10:46:00 - ORDERED seq=3, mid=87756cde-9aee-477a-b9cf-c9a5b49239ea, from=7: 'uuu', awaiting ACKs from 0 followers
-2026-02-12 10:46:00 - STORED in holdback [seq=3] 7: uuu (next_seq_to_deliver=4)
-2026-02-12 10:46:00 - Received ORDERED seq=3, mid=87756cde-9aee-477a-b9cf-c9a5b49239ea, from=7, text='uuu'
-2026-02-12 10:46:00 - STORED in holdback [seq=3] 7: uuu (next_seq_to_deliver=4)
-2026-02-12 10:46:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=4
-2026-02-12 10:46:01 - DISPLAY MEMBERS: 1 nodes: Node 7 (LEADER)
-2026-02-12 10:46:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=4
-2026-02-12 10:46:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=4
-2026-02-12 10:46:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=4
-2026-02-12 10:46:05 - ORDERING MESSAGE: seq=4, mid=bdbbf6a2-0ac0-4d55-beb9-cf03d6166fc4, from=7, text='888'
-2026-02-12 10:46:05 - BROADCAST ORDERED: seq=4, mid=bdbbf6a2-0ac0-4d55-beb9-cf03d6166fc4, to 1 members
-2026-02-12 10:46:05 - Received ORDERED seq=4, mid=bdbbf6a2-0ac0-4d55-beb9-cf03d6166fc4, from=7, text='888'
-2026-02-12 10:46:05 - ORDERED seq=4, mid=bdbbf6a2-0ac0-4d55-beb9-cf03d6166fc4, from=7: '888', awaiting ACKs from 0 followers
-2026-02-12 10:46:05 - STORED in holdback [seq=4] 7: 888 (next_seq_to_deliver=5)
-2026-02-12 10:46:05 - Received ORDERED seq=4, mid=bdbbf6a2-0ac0-4d55-beb9-cf03d6166fc4, from=7, text='888'
-2026-02-12 10:46:05 - STORED in holdback [seq=4] 7: 888 (next_seq_to_deliver=5)
-2026-02-12 10:46:06 - DISPLAY MEMBERS: 1 nodes: Node 7 (LEADER)
-2026-02-12 10:46:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=5
-2026-02-12 10:46:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=5
-2026-02-12 10:46:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=5
+2026-02-12 10:52:27 - Node 7 started
+2026-02-12 10:52:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=1
+2026-02-12 10:52:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=1
+2026-02-12 10:52:49 - DISPLAY MEMBERS: 2 nodes: Node 7 (LEADER), Node 19 (FOLLOWER)
+2026-02-12 10:52:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=1
+2026-02-12 10:52:49 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:52:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=1
+2026-02-12 10:52:51 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:52:53 - ORDERING MESSAGE: seq=1, mid=258842c5-995e-459d-b049-f6625381ec09, from=7, text='heyy'
+2026-02-12 10:52:53 - BROADCAST ORDERED: seq=1, mid=258842c5-995e-459d-b049-f6625381ec09, to 2 members
+2026-02-12 10:52:53 - ORDERED seq=1, mid=258842c5-995e-459d-b049-f6625381ec09, from=7: 'heyy', awaiting ACKs from 1 followers
+2026-02-12 10:52:53 - Received ORDERED seq=1, mid=258842c5-995e-459d-b049-f6625381ec09, from=7, text='heyy'
+2026-02-12 10:52:53 - STORED in holdback [seq=1] 7: heyy (next_seq_to_deliver=2)
+2026-02-12 10:52:53 - Received ORDERED seq=1, mid=258842c5-995e-459d-b049-f6625381ec09, from=7, text='heyy'
+2026-02-12 10:52:53 - STORED in holdback [seq=1] 7: heyy (next_seq_to_deliver=2)
+2026-02-12 10:52:53 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:52:53 - RECEIVED DELIVER_ACK from node 19: seq=1, remaining_acks=0
+2026-02-12 10:52:53 - ALL ACKS RECEIVED: seq=1, mid=258842c5-995e-459d-b049-f6625381ec09
+2026-02-12 10:52:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=2
+2026-02-12 10:52:53 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:52:55 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=1)
+2026-02-12 10:52:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=2
+2026-02-12 10:52:55 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:52:57 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=1)
+2026-02-12 10:52:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=2
+2026-02-12 10:52:57 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:52:59 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=1)
+2026-02-12 10:52:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=2
+2026-02-12 10:52:59 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:01 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=1)
+2026-02-12 10:53:01 - ORDERING MESSAGE: seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b, from=7, text='jiii'
+2026-02-12 10:53:01 - BROADCAST ORDERED: seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b, to 2 members
+2026-02-12 10:53:01 - Received ORDERED seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b, from=7, text='jiii'
+2026-02-12 10:53:01 - ORDERED seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b, from=7: 'jiii', awaiting ACKs from 1 followers
+2026-02-12 10:53:01 - STORED in holdback [seq=2] 7: jiii (next_seq_to_deliver=3)
+2026-02-12 10:53:01 - Received ORDERED seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b, from=7, text='jiii'
+2026-02-12 10:53:01 - STORED in holdback [seq=2] 7: jiii (next_seq_to_deliver=3)
+2026-02-12 10:53:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=3
+2026-02-12 10:53:01 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:02 - RECEIVED DELIVER_ACK from node 19: seq=2, remaining_acks=0
+2026-02-12 10:53:02 - ALL ACKS RECEIVED: seq=2, mid=e2149b35-d1ba-4e4b-8abf-b4b85a1b245b
+2026-02-12 10:53:03 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=2)
+2026-02-12 10:53:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=3
+2026-02-12 10:53:03 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:05 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=2)
+2026-02-12 10:53:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=3
+2026-02-12 10:53:05 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:06 - RECEIVED PROPOSE from node 19: 'hi' (mid=214ee02e-246d-4bb3-8c58-01871e7cb88b)
+2026-02-12 10:53:06 - ORDERING MESSAGE: seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b, from=19, text='hi'
+2026-02-12 10:53:06 - BROADCAST ORDERED: seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b, to 2 members
+2026-02-12 10:53:06 - Received ORDERED seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b, from=7, text='hi'
+2026-02-12 10:53:06 - ORDERED seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b, from=19: 'hi', awaiting ACKs from 1 followers
+2026-02-12 10:53:06 - STORED in holdback [seq=3] 19: hi (next_seq_to_deliver=4)
+2026-02-12 10:53:06 - Received ORDERED seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b, from=7, text='hi'
+2026-02-12 10:53:06 - STORED in holdback [seq=3] 19: hi (next_seq_to_deliver=4)
+2026-02-12 10:53:07 - RECEIVED DELIVER_ACK from node 19: seq=3, remaining_acks=0
+2026-02-12 10:53:07 - ALL ACKS RECEIVED: seq=3, mid=214ee02e-246d-4bb3-8c58-01871e7cb88b
+2026-02-12 10:53:07 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=3)
+2026-02-12 10:53:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=4
+2026-02-12 10:53:07 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:09 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=3)
+2026-02-12 10:53:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=4
+2026-02-12 10:53:09 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:10 - ORDERING MESSAGE: seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea, from=7, text='900909090'
+2026-02-12 10:53:10 - BROADCAST ORDERED: seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea, to 2 members
+2026-02-12 10:53:10 - Received ORDERED seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea, from=7, text='900909090'
+2026-02-12 10:53:10 - ORDERED seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea, from=7: '900909090', awaiting ACKs from 1 followers
+2026-02-12 10:53:10 - STORED in holdback [seq=4] 7: 900909090 (next_seq_to_deliver=5)
+2026-02-12 10:53:10 - Received ORDERED seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea, from=7, text='900909090'
+2026-02-12 10:53:10 - STORED in holdback [seq=4] 7: 900909090 (next_seq_to_deliver=5)
+2026-02-12 10:53:10 - RECEIVED DELIVER_ACK from node 19: seq=4, remaining_acks=0
+2026-02-12 10:53:10 - ALL ACKS RECEIVED: seq=4, mid=9bad3e05-98d5-497c-ae63-f58bf41c31ea
+2026-02-12 10:53:11 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=4)
+2026-02-12 10:53:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=5
+2026-02-12 10:53:11 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:13 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=4)
+2026-02-12 10:53:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=5
+2026-02-12 10:53:13 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:14 - ORDERING MESSAGE: seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3, from=7, text='awwwwww'
+2026-02-12 10:53:14 - BROADCAST ORDERED: seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3, to 2 members
+2026-02-12 10:53:14 - Received ORDERED seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3, from=7, text='awwwwww'
+2026-02-12 10:53:14 - ORDERED seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3, from=7: 'awwwwww', awaiting ACKs from 1 followers
+2026-02-12 10:53:14 - STORED in holdback [seq=5] 7: awwwwww (next_seq_to_deliver=6)
+2026-02-12 10:53:14 - Received ORDERED seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3, from=7, text='awwwwww'
+2026-02-12 10:53:14 - STORED in holdback [seq=5] 7: awwwwww (next_seq_to_deliver=6)
+2026-02-12 10:53:14 - RECEIVED DELIVER_ACK from node 19: seq=5, remaining_acks=0
+2026-02-12 10:53:14 - ALL ACKS RECEIVED: seq=5, mid=a56cd21f-d5fd-4cf3-b7ed-a1a415f70dd3
+2026-02-12 10:53:15 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=5)
+2026-02-12 10:53:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=6
+2026-02-12 10:53:15 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:17 - ORDERING MESSAGE: seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1, from=7, text='wwww'
+2026-02-12 10:53:17 - BROADCAST ORDERED: seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1, to 2 members
+2026-02-12 10:53:17 - Received ORDERED seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1, from=7, text='wwww'
+2026-02-12 10:53:17 - ORDERED seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1, from=7: 'wwww', awaiting ACKs from 1 followers
+2026-02-12 10:53:17 - STORED in holdback [seq=6] 7: wwww (next_seq_to_deliver=7)
+2026-02-12 10:53:17 - Received ORDERED seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1, from=7, text='wwww'
+2026-02-12 10:53:17 - STORED in holdback [seq=6] 7: wwww (next_seq_to_deliver=7)
+2026-02-12 10:53:17 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=5)
+2026-02-12 10:53:17 - RECEIVED DELIVER_ACK from node 19: seq=6, remaining_acks=0
+2026-02-12 10:53:17 - ALL ACKS RECEIVED: seq=6, mid=7def2492-a77c-454e-bcf5-1505d5625ec1
+2026-02-12 10:53:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:17 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:19 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:19 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:21 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:21 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:23 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:23 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:25 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:25 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:27 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:27 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:29 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:29 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:31 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:31 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:33 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:33 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:35 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:35 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:37 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:37 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:39 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:39 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:41 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:41 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:43 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:43 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:45 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:45 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:47 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:47 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:49 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:49 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:51 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:51 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:53 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:53 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:55 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:55 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:57 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:57 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:53:59 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:53:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:53:59 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:01 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:01 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:03 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:03 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:05 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:05 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:07 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:07 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:09 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:09 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:11 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:11 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:13 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:13 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:15 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:15 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:17 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:17 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:19 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:20 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:21 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:22 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:23 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:24 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:25 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:26 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:27 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:28 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:29 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:30 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:31 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=6)
+2026-02-12 10:54:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:32 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:34 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:36 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER), Node 19(FOLLOWER)], next_seq=7
+2026-02-12 10:54:38 - Sent MEMBERSHIP to node 19 at ('192.168.0.100', 60795)
+2026-02-12 10:54:39 - Detected failure of node 19 (no heartbeat for 7.0s) - removing from cluster
+2026-02-12 10:54:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:54:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:55:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
+2026-02-12 10:56:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 7(LEADER)], next_seq=7
