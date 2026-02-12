@@ -769,6 +769,9 @@ class Node:
     
     def _become_leader(self):
         """Declare self as leader and broadcast COORDINATOR."""
+        # Store old leader ID before we update it
+        old_leader_id = self.leader_id
+        
         self.is_leader = True
         self.leader_id = self.node_id
         self.leader_addr = self.unicast_sock.getsockname()
@@ -778,6 +781,17 @@ class Node:
         
         print(f"\n[NEW LEADER] Node {self.node_id} is leader, unicast socket at {self.leader_addr}\n")
         self._system_log(f"Elected as NEW LEADER (term={self.term}), listening at {self.leader_addr}")
+        
+        # If there was an old leader (we're replacing it via election), remove it from members
+        # It's assumed to be dead since we triggered an election to replace it
+        if old_leader_id and old_leader_id != self.node_id:
+            old_leader_key = str(old_leader_id)
+            if old_leader_key in self.members:
+                print(f"Node {self.node_id}: Removing dead leader {old_leader_id} from members")
+                self.logger.info(f"Removing old dead leader {old_leader_id} from members before broadcasting COORDINATOR")
+                del self.members[old_leader_key]
+                if old_leader_key in self.last_seen:
+                    del self.last_seen[old_leader_key]
         
         # Initialize members dict if empty
         if not self.members:
