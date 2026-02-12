@@ -1,0 +1,47 @@
+2026-02-12 10:13:04 - Node 2 started
+2026-02-12 10:13:04 - MEMBERSHIP CHANGED - old: set(), new: {'2', '69'}
+2026-02-12 10:13:04 - Updated leader_id: None -> 69
+2026-02-12 10:13:04 - DISPLAY MEMBERS: 2 nodes: Node 2 (FOLLOWER), Node 69 (LEADER)
+2026-02-12 10:13:04 - MEMBERSHIP SYNC: Synced sequence number - next_seq_to_deliver=1
+2026-02-12 10:13:04 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:07 - RECEIVED MEMBERSHIP UPDATE (no change): term=1, members={'2', '69'}
+2026-02-12 10:13:07 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:08 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:09 - RECEIVED MEMBERSHIP UPDATE (no change): term=1, members={'2', '69'}
+2026-02-12 10:13:09 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:10 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:10 - RECEIVED MEMBERSHIP UPDATE (no change): term=1, members={'2', '69'}
+2026-02-12 10:13:10 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:12 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:13 - RECEIVED MEMBERSHIP UPDATE (no change): term=1, members={'2', '69'}
+2026-02-12 10:13:13 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:14 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:14 - RECEIVED MEMBERSHIP UPDATE (no change): term=1, members={'2', '69'}
+2026-02-12 10:13:14 - UPDATED MEMBERSHIP from leader 69 (term=1): [Node 2(FOLLOWER), Node 69(LEADER)]
+2026-02-12 10:13:16 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:18 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:20 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:22 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:22 - ELECTION INITIATED BY NODE 2: Reason=LEADER_TIMEOUT, leader_id=69, last_seen_age=7.15s
+2026-02-12 10:13:22 - STARTED ELECTION: initiator=2, term=1, election_id=9688b031-62cc-4846-9c1c-93467f34791e
+2026-02-12 10:13:22 - ELECTION CALCULATION: node_id=2, all_members=['2', '69'], higher_ids=[69]
+2026-02-12 10:13:22 - ELECTION SENT: from_node=2, to_higher_nodes=[69], count=1
+2026-02-12 10:13:22 - ELECTION MESSAGE FAILED: from=2, to=69, error=[Errno 65] No route to host
+2026-02-12 10:13:24 - SENT HEARTBEAT to leader 69 at ('192.168.0.103', 56036) (max_seq_delivered=0)
+2026-02-12 10:13:24 - ELECTION TIMEOUT: initiator=2, no_ok_received=true, timeout_sec=2.0, result=BECOME_LEADER
+2026-02-12 10:13:24 - Removing old dead leader 69 from members before broadcasting COORDINATOR
+2026-02-12 10:13:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=1
+2026-02-12 10:13:36 - ORDERING MESSAGE: seq=1, mid=4b1488bf-de3d-4d9a-8c34-6f39e21df6d6, from=2, text='heo'
+2026-02-12 10:13:36 - BROADCAST ORDERED: seq=1, mid=4b1488bf-de3d-4d9a-8c34-6f39e21df6d6, to 1 members
+2026-02-12 10:13:36 - Received ORDERED seq=1, mid=4b1488bf-de3d-4d9a-8c34-6f39e21df6d6, from=2, text='heo'
+2026-02-12 10:13:36 - ORDERED seq=1, mid=4b1488bf-de3d-4d9a-8c34-6f39e21df6d6, from=2: 'heo', awaiting ACKs from 0 followers
+2026-02-12 10:13:36 - STORED in holdback [seq=1] 2: heo (next_seq_to_deliver=2)
+2026-02-12 10:13:36 - Received ORDERED seq=1, mid=4b1488bf-de3d-4d9a-8c34-6f39e21df6d6, from=2, text='heo'
+2026-02-12 10:13:36 - STORED in holdback [seq=1] 2: heo (next_seq_to_deliver=2)
+2026-02-12 10:13:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 2(LEADER)], next_seq=2

@@ -1,0 +1,420 @@
+2026-02-12 10:25:58 - Node 6 started
+2026-02-12 10:26:09 - Node 6 started
+2026-02-12 10:26:14 - leader_id=None, leader_addr=None, members={}
+2026-02-12 10:26:15 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 57574)
+2026-02-12 10:26:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:18 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 57574)
+2026-02-12 10:26:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:20 - leader_id=None, leader_addr=None, members={}
+2026-02-12 10:26:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:21 - leader_id=None, leader_addr=None, members={}
+2026-02-12 10:26:21 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 57574)
+2026-02-12 10:26:21 - leader_id=None, leader_addr=None, members={}
+2026-02-12 10:26:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:23 - leader_id=None, leader_addr=None, members={}
+2026-02-12 10:26:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:28 - ORDERING MESSAGE: seq=1, mid=f8d79852-ce6f-44d2-a392-93d7ded73128, from=6, text='ss]'
+2026-02-12 10:26:28 - BROADCAST ORDERED: seq=1, mid=f8d79852-ce6f-44d2-a392-93d7ded73128, to 1 members
+2026-02-12 10:26:28 - Received ORDERED seq=1, mid=f8d79852-ce6f-44d2-a392-93d7ded73128, from=6, text='ss]'
+2026-02-12 10:26:28 - Received ORDERED seq=1, mid=f8d79852-ce6f-44d2-a392-93d7ded73128, from=6, text='ss]'
+2026-02-12 10:26:28 - ORDERED seq=1, mid=f8d79852-ce6f-44d2-a392-93d7ded73128, from=6: 'ss]', awaiting ACKs from 0 followers
+2026-02-12 10:26:28 - STORED in holdback [seq=1] 6: ss] (next_seq_to_deliver=1)
+2026-02-12 10:26:28 - STORED in holdback [seq=1] 6: ss] (next_seq_to_deliver=2)
+2026-02-12 10:26:28 - DELIVERING [seq=1] 6: ss]
+2026-02-12 10:26:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:26:29 - ORDERING MESSAGE: seq=2, mid=525d3678-a259-4e98-ab36-ecf48ff49df7, from=6, text='ss'
+2026-02-12 10:26:29 - BROADCAST ORDERED: seq=2, mid=525d3678-a259-4e98-ab36-ecf48ff49df7, to 1 members
+2026-02-12 10:26:29 - Received ORDERED seq=2, mid=525d3678-a259-4e98-ab36-ecf48ff49df7, from=6, text='ss'
+2026-02-12 10:26:29 - Received ORDERED seq=2, mid=525d3678-a259-4e98-ab36-ecf48ff49df7, from=6, text='ss'
+2026-02-12 10:26:29 - ORDERED seq=2, mid=525d3678-a259-4e98-ab36-ecf48ff49df7, from=6: 'ss', awaiting ACKs from 0 followers
+2026-02-12 10:26:29 - STORED in holdback [seq=2] 6: ss (next_seq_to_deliver=2)
+2026-02-12 10:26:29 - STORED in holdback [seq=2] 6: ss (next_seq_to_deliver=3)
+2026-02-12 10:26:29 - DELIVERING [seq=2] 6: ss
+2026-02-12 10:26:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=3
+2026-02-12 10:26:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=3
+2026-02-12 10:26:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:26:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:12 - Node 6 started
+2026-02-12 10:27:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:35 - Node 6 started
+2026-02-12 10:27:35 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 61946)
+2026-02-12 10:27:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:38 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 61946)
+2026-02-12 10:27:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:41 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 61946)
+2026-02-12 10:27:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:44 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 61946)
+2026-02-12 10:27:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:47 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 61946)
+2026-02-12 10:27:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:58 - ORDERING MESSAGE: seq=1, mid=67919c64-90f3-4511-bc8c-aeb99e9d3c73, from=6, text='hh'
+2026-02-12 10:27:58 - BROADCAST ORDERED: seq=1, mid=67919c64-90f3-4511-bc8c-aeb99e9d3c73, to 1 members
+2026-02-12 10:27:58 - Received ORDERED seq=1, mid=67919c64-90f3-4511-bc8c-aeb99e9d3c73, from=6, text='hh'
+2026-02-12 10:27:58 - Received ORDERED seq=1, mid=67919c64-90f3-4511-bc8c-aeb99e9d3c73, from=6, text='hh'
+2026-02-12 10:27:58 - ORDERED seq=1, mid=67919c64-90f3-4511-bc8c-aeb99e9d3c73, from=6: 'hh', awaiting ACKs from 0 followers
+2026-02-12 10:27:58 - STORED in holdback [seq=1] 6: hh (next_seq_to_deliver=1)
+2026-02-12 10:27:58 - STORED in holdback [seq=1] 6: hh (next_seq_to_deliver=2)
+2026-02-12 10:27:58 - DELIVERING [seq=1] 6: hh
+2026-02-12 10:27:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:27:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:28:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:28:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:29:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:29:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:29:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:29:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:29:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:31:27 - Node 6 started
+2026-02-12 10:31:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:51 - Node 6 started
+2026-02-12 10:31:51 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 60089)
+2026-02-12 10:31:51 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 57796)
+2026-02-12 10:31:51 - DUPLICATE NODE REJECTION RECEIVED: reason=DUPLICATE_NODE_ID, message=Node 6 already exists in cluster
+2026-02-12 10:31:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:54 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 60089)
+2026-02-12 10:31:54 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 57796)
+2026-02-12 10:31:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:57 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 60089)
+2026-02-12 10:31:57 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 57796)
+2026-02-12 10:31:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:31:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:00 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 60089)
+2026-02-12 10:32:00 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 57796)
+2026-02-12 10:32:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:03 - DUPLICATE NODE DETECTED: node_id=6 already in cluster, rejecting discovery attempt from ('172.28.187.208', 60089)
+2026-02-12 10:32:03 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 57796)
+2026-02-12 10:32:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:32:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:31 - Node 6 started
+2026-02-12 10:33:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:49 - Node 6 started
+2026-02-12 10:33:49 - DUPLICATE NODE DETECTED: node_id=6 already at ('0.0.0.0', 49793)
+2026-02-12 10:33:49 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 49678)
+2026-02-12 10:33:49 - DUPLICATE NODE REJECTION RECEIVED: reason=DUPLICATE_NODE_ID, message=Node 6 already exists in cluster
+2026-02-12 10:33:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:52 - Duplicate node 6 retry (suppressed - cooldown active)
+2026-02-12 10:33:52 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 49678)
+2026-02-12 10:33:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:55 - DUPLICATE NODE DETECTED: node_id=6 already at ('0.0.0.0', 49793)
+2026-02-12 10:33:55 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 49678)
+2026-02-12 10:33:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:33:58 - Duplicate node 6 retry (suppressed - cooldown active)
+2026-02-12 10:33:58 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 49678)
+2026-02-12 10:33:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:01 - DUPLICATE NODE DETECTED: node_id=6 already at ('0.0.0.0', 49793)
+2026-02-12 10:34:02 - Sent DUPLICATE_REJECTED to 6 at ('172.28.187.208', 49678)
+2026-02-12 10:34:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:39 - ORDERING MESSAGE: seq=1, mid=b3f0cf5a-245f-4fed-a138-0373da77a53a, from=6, text='hii'
+2026-02-12 10:34:39 - BROADCAST ORDERED: seq=1, mid=b3f0cf5a-245f-4fed-a138-0373da77a53a, to 1 members
+2026-02-12 10:34:39 - Received ORDERED seq=1, mid=b3f0cf5a-245f-4fed-a138-0373da77a53a, from=6, text='hii'
+2026-02-12 10:34:39 - Received ORDERED seq=1, mid=b3f0cf5a-245f-4fed-a138-0373da77a53a, from=6, text='hii'
+2026-02-12 10:34:39 - ORDERED seq=1, mid=b3f0cf5a-245f-4fed-a138-0373da77a53a, from=6: 'hii', awaiting ACKs from 0 followers
+2026-02-12 10:34:39 - STORED in holdback [seq=1] 6: hii (next_seq_to_deliver=1)
+2026-02-12 10:34:39 - STORED in holdback [seq=1] 6: hii (next_seq_to_deliver=2)
+2026-02-12 10:34:39 - DELIVERING [seq=1] 6: hii
+2026-02-12 10:34:40 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:42 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:44 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:46 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:48 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:50 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:52 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:54 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:56 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:34:58 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:34:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:22 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:24 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:26 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:28 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:30 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:32 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:34 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:36 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:38 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:35:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:35:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:36:42 - Node 6 started
+2026-02-12 10:37:00 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:01 - Node 6 started
+2026-02-12 10:37:01 - Duplicate node 6 discovery attempt from ('172.28.187.208', 60174)
+2026-02-12 10:37:01 - Sent DUPLICATE_REJECTED to 6
+2026-02-12 10:37:01 - DUPLICATE NODE REJECTION RECEIVED: reason=DUPLICATE_NODE_ID, message=Node 6 already exists in cluster
+2026-02-12 10:37:02 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:04 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:06 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:08 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:10 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:12 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:14 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:16 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:18 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=1
+2026-02-12 10:37:20 - ORDERING MESSAGE: seq=1, mid=9a1422d8-e7e5-495c-a62f-2e2c00ed2d01, from=6, text='hii'
+2026-02-12 10:37:20 - BROADCAST ORDERED: seq=1, mid=9a1422d8-e7e5-495c-a62f-2e2c00ed2d01, to 1 members
+2026-02-12 10:37:20 - Received ORDERED seq=1, mid=9a1422d8-e7e5-495c-a62f-2e2c00ed2d01, from=6, text='hii'
+2026-02-12 10:37:20 - ORDERED seq=1, mid=9a1422d8-e7e5-495c-a62f-2e2c00ed2d01, from=6: 'hii', awaiting ACKs from 0 followers
+2026-02-12 10:37:20 - STORED in holdback [seq=1] 6: hii (next_seq_to_deliver=2)
+2026-02-12 10:37:20 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:37:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:09 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:11 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:13 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:15 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:17 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:19 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:21 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:23 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:25 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:27 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:29 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:31 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2
+2026-02-12 10:38:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 6(LEADER)], next_seq=2

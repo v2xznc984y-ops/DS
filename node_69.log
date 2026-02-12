@@ -1,0 +1,41 @@
+2026-02-12 10:10:15 - Node 69 started
+2026-02-12 10:10:33 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:35 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:37 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:39 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:41 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:42 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
+2026-02-12 10:10:43 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:44 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
+2026-02-12 10:10:45 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:46 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
+2026-02-12 10:10:47 - BROADCAST MEMBERSHIP: term=1, members=[Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:48 - DISPLAY MEMBERS: 2 nodes: Node 19 (FOLLOWER), Node 69 (LEADER)
+2026-02-12 10:10:49 - RECEIVED HEARTBEAT from follower 69 (max_seq_delivered=0)
+2026-02-12 10:10:49 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:49 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:51 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:51 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:53 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:53 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:55 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:55 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:55 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:10:57 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:57 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:57 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:10:59 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:10:59 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:10:59 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:11:01 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:11:01 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:11:01 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:11:03 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:11:03 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:11:03 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:11:05 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:11:05 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:11:05 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
+2026-02-12 10:11:07 - BROADCAST MEMBERSHIP: term=1, members=[Node 19(FOLLOWER), Node 69(LEADER)], next_seq=1
+2026-02-12 10:11:07 - Sent MEMBERSHIP to node 19 at ('192.168.0.104', 58943)
+2026-02-12 10:11:07 - RECEIVED HEARTBEAT from follower 19 (max_seq_delivered=0)
